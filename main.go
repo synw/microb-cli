@@ -7,7 +7,7 @@ import (
 	"github.com/abiosoft/ishell"
 	"github.com/synw/microb/libmicrob/datatypes"
 	"github.com/synw/microb-cli/libmicrob/metadata"
-	//"github.com/synw/microb-cli/libmicrob/listeners"
+	//"github.com/synw/microb/libmicrob/events"
 	"github.com/synw/microb-cli/libmicrob/cmds"
 )
 
@@ -97,6 +97,50 @@ func main(){
         		shell.Println(msg)
         	}
         },
-    })   
+    })
+    
+    // REPARSE_TEMPLATES
+    shell.AddCmd(&ishell.Cmd{
+        Name: "reparse_templates",
+        Help: "Reparse templates",
+        Func: func(ctx *ishell.Context) {
+        	//events.New("command", "cli", "reparse_templates")
+        	_, err, msg := cmds.SendCmd(ctx, "reparse_templates", CurrentServer)
+        	if err != nil {
+        		ctx.Err(err)
+        	} else {
+        		shell.Println(msg)
+        	}
+        },
+    })
+    
+    // UPDATE ROUTES
+    shell.AddCmd(&ishell.Cmd{
+        Name: "update_routes",
+        Help: "Update client side routes",
+        Func: func(ctx *ishell.Context) {
+        	_, err, msg := cmds.SendCmd(ctx, "update_routes", CurrentServer)
+        	if err != nil {
+        		ctx.Err(err)
+        	} else {
+        		shell.Println(msg)
+        	}
+        },
+    })
+    
+    // DB STATUS
+    shell.AddCmd(&ishell.Cmd{
+        Name: "db_status",
+        Help: "Reports main database status",
+        Func: func(ctx *ishell.Context) {
+        	_, err, msg := cmds.SendCmd(ctx, "db_status", CurrentServer)
+        	if err != nil {
+        		ctx.Err(err)
+        	} else {
+        		shell.Println(msg)
+        	}
+        },
+    })
+     
     shell.Start()
 }

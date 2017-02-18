@@ -13,6 +13,7 @@ import (
 	"github.com/synw/microb/libmicrob/commands/methods"
 	"github.com/synw/microb-cli/libmicrob/metadata"
 	"github.com/synw/microb-cli/libmicrob/listeners"
+	appevents "github.com/synw/microb/libmicrob/events"
 )
 
 
@@ -45,14 +46,14 @@ func SendCmd(ctx *ishell.Context, name string, server *datatypes.Server) (*datat
 		select {
 			case fb := <- c_feedback:
 				msg = fb
-				//fmt.Println("FB", msg, "stopping listeners")
 				close(c_feedback)
 				close(c_done)
 				wg_res.Done()
-			case <-time.After(5*time.Second):
+			case <-time.After(10*time.Second):
 				close(c_feedback)
 				close(c_done)
-				msg = "Timeout: server did not respond"
+				err := errors.New("Timeout: server did not respond")
+				msg = appevents.ErrorFormated(err)
 				wg_res.Done()
 		}
 	}()

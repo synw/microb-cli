@@ -70,7 +70,7 @@ func listenForFeedback(channel_name string, feedback chan string, server *dataty
 			var args []interface{}
 			err_ := errors.New(cmd_error)
 			command := &datatypes.Command{cmd_id, cmd_name, cmd_from, cmd_reason, now, args, cmd_status, err_, rvs}
-			msg := appevents.GetCommandReportMsg(command)
+			msg := appevents.GetFormatedCommandReportMsgSimple(command)
 			feedback <- msg
 		}
 		return nil

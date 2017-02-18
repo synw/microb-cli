@@ -7,7 +7,7 @@ import (
 
 
 func GetCliConf() map[string]interface{} {
-	viper.SetConfigName("config")
+	viper.SetConfigName("dev_config")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.microb-cli")
 	err := viper.ReadInConfig()
