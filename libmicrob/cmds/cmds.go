@@ -25,12 +25,16 @@ func SendCmd(ctx *ishell.Context, name string, server *datatypes.Server) (*datat
 	args := getArgs(ctx)
 	id := encoding.GenerateId()
 	command := &datatypes.Command{id, name, "cli", "", time.Now(), args, "pending", nil, rvs}
+	// check if server is set
+	if server == nil {
+		err := errors.New("No server selected. Set it with: use server_name")
+		return command, err, ""
+	}
 	// check validity
 	var msg string
 	if commands_methods.IsValid(command) != true {
-		msg = "Command "+command.Name+" unknown"
-		//c.Err(errors.New(msg))
-		return command, errors.New(msg), msg
+		err := errors.New("Command "+command.Name+" unknown")
+		return command, err, ""
 	}
 	// wait for results
 	c_feedback := make(chan string)
