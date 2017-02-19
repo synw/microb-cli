@@ -104,17 +104,17 @@ func main(){
     // TIME
     shell.AddCmd(&ishell.Cmd{
         Name: "time",
-        Help: "Time for a request to process: time /mypath/",
+        Help: "Time for a request to process: time /mypath/ or time http://myurl.com",
         Func: func(ctx *ishell.Context) {
         	url := "/"
         	if len(ctx.Args) > 0 {
         		url = ctx.Args[0]
         	}
         	metric, err := http_metrics.GetRequestMetric(url, CurrentServer)
-        	msg := metric.Format()
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
         	} else {
+        		msg := metric.Format()
         		ctx.Println(msg)
         	}
         },
