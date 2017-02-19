@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"strconv"
 	"github.com/abiosoft/ishell"
 	"github.com/synw/microb/libmicrob/events/format"
 	"github.com/synw/microb/libmicrob/datatypes"
@@ -142,12 +143,37 @@ func main(){
      // STRESS
     shell.AddCmd(&ishell.Cmd{
         Name: "stress",
-        Help: "Stress the server by sending requests",
+        Help: "Stress the server by sending requests: stress 500 5 50 (interval, number of workers, number of requests)",
         Func: func(ctx *ishell.Context) {
-        	_, err, msg := cmds.SendCmd(ctx, "ping", CurrentServer)
+        	interval := 500
+        	workers := 5
+        	limit := 50
+        	var err error
+        	if len(ctx.Args) > 0 {
+        		if len(ctx.Args) != 3 {
+        			err = errors.New("Please provide 3 arguments: interval, number of workers and max number of requests")
+        		}
+        		if err != nil {
+	        		ctx.Println(format.ErrorFormated(err))
+	        	}
+        		interval, err = strconv.Atoi(ctx.Args[0])
+        		if err != nil {
+	        		ctx.Println(format.ErrorFormated(err))
+	        	}
+	        	workers, err = strconv.Atoi(ctx.Args[1])
+        		if err != nil {
+	        		ctx.Println(format.ErrorFormated(err))
+	        	}
+	        	limit, err = strconv.Atoi(ctx.Args[2])
+        		if err != nil {
+	        		ctx.Println(format.ErrorFormated(err))
+	        	}
+        	}
+        	report, err := http_metrics.Stress(CurrentServer, interval, workers, limit)
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
         	} else {
+        		msg := report.Format()
         		ctx.Println(msg)
         	}
         },

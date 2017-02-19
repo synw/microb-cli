@@ -1,12 +1,12 @@
 package http_metrics
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 	"errors"
 	"strings"
 	"io/ioutil"
+	"math/rand"
 	"encoding/binary"
 	"github.com/tcnksm/go-httpstat"
 	"github.com/synw/microb/libmicrob/datatypes"
@@ -18,12 +18,44 @@ func New(url string, server *datatypes.Server, server_processing int, transport_
 	return m
 }
 
-func NewHttpResponse(server *datatypes.Server, url string, content string, size int, status_code int, duration *time.Duration) *datatypes.HttpResponse {
+func NewHttpResponse(server *datatypes.Server, url string, content string, size int, status_code int, duration time.Duration) *datatypes.HttpResponse {
 	r := &datatypes.HttpResponse{server, url, content, size, status_code, duration}
 	return r	
 }
 
-func Get(path string, server *datatypes.Server ) (*datatypes.HttpResponse, error) {
+func NewStressReport(server *datatypes.Server, num_requests int, size int, duration time.Duration) *datatypes.HttpStressReport {
+	r := &datatypes.HttpStressReport{server, num_requests, size, duration}
+	return r
+}
+
+func Stress(server *datatypes.Server, interval int, workers int, limit int) (*datatypes.HttpStressReport, error) {
+	var duration time.Duration
+	var size int
+	
+	d := time.Duration(interval)*time.Millisecond
+	nw := 0
+	i := 0
+	for _ = range time.Tick(d) {
+		nw = 0
+		for nw < workers {
+			url := "/"
+			s := rand.Intn(500)
+			time.Sleep(time.Duration(s)*time.Millisecond)
+			resp, _ := Get(url, server)
+		    size = size+resp.Size
+		    duration = duration+resp.Duration
+			nw = nw+1
+			i++
+		}
+		if i >= limit {
+			break
+		}
+	}
+	report := NewStressReport(server, limit, size, duration)
+	return report, nil
+}
+
+func Get(path string, server *datatypes.Server) (*datatypes.HttpResponse, error) {
 	var r *datatypes.HttpResponse
 	t := time.Now()
 	var content string
@@ -35,20 +67,17 @@ func Get(path string, server *datatypes.Server ) (*datatypes.HttpResponse, error
 	resp, err := http.Get(url)
     if err != nil {
     	return r, err
-    } else {
-    	defer resp.Body.Close()
-		// reads html as a slice of bytes
-		bcontent, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-	    	return r, err
-	    }
-		content = string(bcontent[:])
-		size = binary.Size(bcontent)
-	    }
+    }
+	defer resp.Body.Close()
+	bcontent, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+    	return r, err
+    }
+	content = string(bcontent[:])
+	size = binary.Size(bcontent)
 	duration := time.Since(t)
 	status_code := resp.StatusCode
-	r = NewHttpResponse(server, url, content, size, status_code, &duration)
-	fmt.Println(r)
+	r = NewHttpResponse(server, url, content, size, status_code, duration)
     return r, nil
 }
 
