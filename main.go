@@ -4,10 +4,11 @@ import (
 	"errors"
 	"flag"
 	"github.com/abiosoft/ishell"
-	appevents "github.com/synw/microb/libmicrob/events"
+	"github.com/synw/microb/libmicrob/events/format"
 	"github.com/synw/microb/libmicrob/datatypes"
 	"github.com/synw/microb-cli/libmicrob/metadata"
 	"github.com/synw/microb-cli/libmicrob/cmds"
+	"github.com/synw/microb-cli/libmicrob/metrics/http"
 )
 
 
@@ -34,7 +35,7 @@ func main(){
 	if *UseServerFlag != "" {
 		_, err  := cmds.ServerExists(*UseServerFlag)
 		if err != nil {
-			shell.Println(appevents.ErrorFormated(err))
+			shell.Println(format.ErrorFormated(err))
 			return
 		}
 		CurrentServer= Servers[*UseServerFlag]
@@ -64,7 +65,7 @@ func main(){
 			server_name := ctx.Args[0]
 			_, err  = cmds.ServerExists(server_name)
 			if err != nil {
-				ctx.Println(appevents.ErrorFormated(err))
+				ctx.Println(format.ErrorFormated(err))
 				return
 			}
 			CurrentServer= Servers[server_name]
@@ -81,7 +82,7 @@ func main(){
             	ctx.Println("Using server", CurrentServer.Domain)
             } else {
             	err := errors.New("No server in use. To select a server type: use server_name")
-            	ctx.Println(appevents.ErrorFormated(err))
+            	ctx.Println(format.ErrorFormated(err))
             }
         },
     })
@@ -93,7 +94,26 @@ func main(){
         Func: func(ctx *ishell.Context) {
         	_, err, msg := cmds.SendCmd(ctx, "ping", CurrentServer)
         	if err != nil {
-        		ctx.Println(appevents.ErrorFormated(err))
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
+    // TIME
+    shell.AddCmd(&ishell.Cmd{
+        Name: "time",
+        Help: "Time for a request to process: time /mypath/",
+        Func: func(ctx *ishell.Context) {
+        	url := "/"
+        	if len(ctx.Args) > 0 {
+        		url = ctx.Args[0]
+        	}
+        	metric, err := http_metrics.GetRequestMetric(url, CurrentServer)
+        	msg := metric.Format()
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
         	} else {
         		ctx.Println(msg)
         	}
@@ -107,7 +127,7 @@ func main(){
         Func: func(ctx *ishell.Context) {
         	_, err, msg := cmds.SendCmd(ctx, "ping", CurrentServer)
         	if err != nil {
-        		ctx.Println(appevents.ErrorFormated(err))
+        		ctx.Println(format.ErrorFormated(err))
         	} else {
         		ctx.Println(msg)
         	}
@@ -124,7 +144,7 @@ func main(){
         		go func() {
         			_, err, msg := cmds.SendCmd(ctx, "ping", server)
 	        		if err != nil {
-		        		ctx.Println(appevents.ErrorFormated(err))
+		        		ctx.Println(format.ErrorFormated(err))
 		        	} else {
 		        		ctx.Println(msg)
 		        	}
@@ -141,7 +161,7 @@ func main(){
         	//events.New("command", "cli", "reparse_templates")
         	_, err, msg := cmds.SendCmd(ctx, "reparse_templates", CurrentServer)
         	if err != nil {
-        		ctx.Println(appevents.ErrorFormated(err))
+        		ctx.Println(format.ErrorFormated(err))
         	} else {
         		ctx.Println(msg)
         	}
@@ -155,7 +175,7 @@ func main(){
         Func: func(ctx *ishell.Context) {
         	_, err, msg := cmds.SendCmd(ctx, "update_routes", CurrentServer)
         	if err != nil {
-        		ctx.Println(appevents.ErrorFormated(err))
+        		ctx.Println(format.ErrorFormated(err))
         	} else {
         		ctx.Println(msg)
         	}
@@ -169,7 +189,7 @@ func main(){
         Func: func(ctx *ishell.Context) {
         	_, err, msg := cmds.SendCmd(ctx, "db_status", CurrentServer)
         	if err != nil {
-        		ctx.Println(appevents.ErrorFormated(err))
+        		ctx.Println(format.ErrorFormated(err))
         	} else {
         		ctx.Println(msg)
         	}

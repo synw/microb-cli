@@ -10,7 +10,7 @@ import (
 	"github.com/centrifugal/centrifuge-go"
 	"github.com/centrifugal/centrifugo/libcentrifugo/auth"
 	"github.com/synw/microb/libmicrob/datatypes"
-	appevents "github.com/synw/microb/libmicrob/events"
+	"github.com/synw/microb/libmicrob/events/format"
 	"github.com/synw/microb/libmicrob/datatypes/encoding"
 	"github.com/synw/microb-cli/libmicrob/conf"
 	"github.com/synw/microb-cli/libmicrob/metadata"
@@ -70,7 +70,7 @@ func listenForFeedback(channel_name string, feedback chan string, server *dataty
 			var args []interface{}
 			err_ := errors.New(cmd_error)
 			command := &datatypes.Command{cmd_id, cmd_name, cmd_from, cmd_reason, now, args, cmd_status, err_, rvs}
-			msg := appevents.GetFormatedCommandReportMsgSimple(command)
+			msg := format.GetFormatedCommandReportMsgSimple(command)
 			feedback <- msg
 		}
 		return nil

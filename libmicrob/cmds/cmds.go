@@ -11,9 +11,9 @@ import (
 	"github.com/synw/microb/libmicrob/datatypes"
 	"github.com/synw/microb/libmicrob/datatypes/encoding"
 	"github.com/synw/microb/libmicrob/commands/methods"
+	"github.com/synw/microb/libmicrob/events/format"
 	"github.com/synw/microb-cli/libmicrob/metadata"
 	"github.com/synw/microb-cli/libmicrob/listeners"
-	appevents "github.com/synw/microb/libmicrob/events"
 )
 
 
@@ -57,7 +57,7 @@ func SendCmd(ctx *ishell.Context, name string, server *datatypes.Server) (*datat
 				close(c_feedback)
 				close(c_done)
 				err := errors.New("Timeout: server did not respond")
-				msg = appevents.ErrorFormated(err)
+				msg = format.ErrorFormated(err)
 				wg_res.Done()
 		}
 	}()
