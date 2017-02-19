@@ -120,6 +120,25 @@ func main(){
         },
     })
     
+    // GET
+    shell.AddCmd(&ishell.Cmd{
+        Name: "get",
+        Help: "Get the content of an url: get /mypath/ or time http://myurl.com",
+        Func: func(ctx *ishell.Context) {
+        	url := "/"
+        	if len(ctx.Args) > 0 {
+        		url = ctx.Args[0]
+        	}
+        	httpResp, err := http_metrics.Get(url, CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		msg := httpResp.Format()
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
      // STRESS
     shell.AddCmd(&ishell.Cmd{
         Name: "stress",
