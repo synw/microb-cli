@@ -37,3 +37,8 @@ Configure your servers in `config.json`
 
 - **update_routes**: updates client side routes
 
+Credits
+-------
+
+- (Ishell)[https://github.com/abiosoft/ishell]: library for building cli apps
+
