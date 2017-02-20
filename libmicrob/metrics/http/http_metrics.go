@@ -13,6 +13,7 @@ import (
 )
 
 
+// constructors
 func New(url string, server *datatypes.Server, server_processing int, transport_time int, total_time int, status_code int) *datatypes.HttpRequestMetric {
 	m := &datatypes.HttpRequestMetric{server, url, server_processing, transport_time, total_time, status_code}
 	return m
@@ -28,6 +29,7 @@ func NewStressReport(server *datatypes.Server, num_requests int, size int, durat
 	return r
 }
 
+// methods
 func Stress(server *datatypes.Server, interval int, workers int, limit int) (*datatypes.HttpStressReport, error) {
 	var duration time.Duration
 	var size int

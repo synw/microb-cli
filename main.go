@@ -179,6 +179,37 @@ func main(){
         },
     })
     
+    // ROUTES
+    shell.AddCmd(&ishell.Cmd{
+        Name: "routes",
+        Help: "Get the registered routes",
+        Func: func(ctx *ishell.Context) {
+        	var msg string
+        	_, err, msg := cmds.SendCmd(ctx, "routes", CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		msg = "Registered routes for server "+CurrentServer.Domain+":\n"+msg
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
+    /*
+    // SYS
+    shell.AddCmd(&ishell.Cmd{
+        Name: "sys",
+        Help: "Get some system information from the current server",
+        Func: func(ctx *ishell.Context) {
+        	command, err, msg := cmds.SendCmd(ctx, "sys", CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    */
     /*
     // PINGALL
     shell.AddCmd(&ishell.Cmd{

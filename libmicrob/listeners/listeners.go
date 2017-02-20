@@ -53,6 +53,9 @@ func listenForFeedback(channel_name string, feedback chan string, server *dataty
 			msg = "Error decoding json raw message: "+err.Error()
 			feedback <- msg
 		}
+		if (Debug == true) {
+			fmt.Println("Decoded payload", payload)
+		}
 		event_class := payload.EventClass
 		data := payload.Data
 		cmd_status := payload.Status
