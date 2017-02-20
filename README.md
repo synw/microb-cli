@@ -40,5 +40,5 @@ Configure your servers in `config.json`
 Credits
 -------
 
-- (Ishell)[https://github.com/abiosoft/ishell]: library for building cli apps
+- [Ishell](https://github.com/abiosoft/ishell): library for building cli apps
 
