@@ -258,12 +258,40 @@ func main(){
         },
     })
     
+    // STATE
+    shell.AddCmd(&ishell.Cmd{
+        Name: "state",
+        Help: "Print server state information",
+        Func: func(ctx *ishell.Context) {
+        	_, err, msg := cmds.SendCmd(ctx, "state", CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
     // DB STATUS
     shell.AddCmd(&ishell.Cmd{
         Name: "db_status",
         Help: "Reports main database status",
         Func: func(ctx *ishell.Context) {
         	_, err, msg := cmds.SendCmd(ctx, "db_status", CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
+    // DATABASES
+    shell.AddCmd(&ishell.Cmd{
+        Name: "databases",
+        Help: "Display info about the available databases",
+        Func: func(ctx *ishell.Context) {
+        	_, err, msg := cmds.SendCmd(ctx, "databases", CurrentServer)
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
         	} else {

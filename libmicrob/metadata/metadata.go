@@ -3,8 +3,8 @@ package metadata
 import (
 	//"fmt"
 	"errors"
-	"github.com/synw/microb-cli/libmicrob/conf"
     "github.com/synw/microb/libmicrob/datatypes"
+    "github.com/synw/microb-cli/libmicrob/conf"
 )
 
 
@@ -15,18 +15,30 @@ func IsDebug() bool {
 	return d
 }
 
+func newServer(domain string, host string, port string, ws_host string, ws_port string, ws_key string) *datatypes.Server {
+	server := &datatypes.Server{
+								Domain:domain, 
+								Host:host, 
+								Port:port, 
+								WebsocketsHost:ws_host, 
+								WebsocketsPort:ws_port, 
+								WebsocketsKey:ws_key,
+								}
+	return server
+}
+
 func GetServers() map[string]*datatypes.Server {
 	available_servers := Config["servers"].([]interface{})
 	servers := make(map[string]*datatypes.Server)
 	for i, _ := range available_servers {
 		sv := available_servers[i].(map[string]interface{})
 		domain := sv["domain"].(string)
-		http_host :=  sv["http_host"].(string)
-		http_port := sv["http_port"].(string)
-		websockets_host := sv["centrifugo_host"].(string)
-		websockets_port := sv["centrifugo_port"].(string)
-		websockets_key := sv["centrifugo_secret_key"].(string)
-		servers[domain] = &datatypes.Server{domain, http_host, http_port, websockets_host, websockets_port, websockets_key}
+		host :=  sv["http_host"].(string)
+		port := sv["http_port"].(string)
+		ws_host := sv["centrifugo_host"].(string)
+		ws_port := sv["centrifugo_port"].(string)
+		ws_key := sv["centrifugo_secret_key"].(string)
+		servers[domain] = newServer(domain, host, port, ws_host, ws_port, ws_key)
 	}
 	return servers
 }
