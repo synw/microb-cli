@@ -263,7 +263,18 @@ func main(){
         Name: "state",
         Help: "Print server state information",
         Func: func(ctx *ishell.Context) {
-        	_, err, msg := cmds.SendCmd(ctx, "state", CurrentServer)
+        	var err error
+        	var msg string
+        	num_args := len(ctx.Args)
+        	if num_args == 0 {
+        		_, err, msg = cmds.SendCmd(ctx, "state", CurrentServer)
+        	} else if num_args == 1 {
+        		if ctx.Args[0] == "db" {
+        			_, err, msg = cmds.SendCmd(ctx, "state", CurrentServer)
+        		}
+        	} else {
+        		err = errors.New("Only one argument is needed for this command: ex: state db")
+        	}
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
         	} else {
