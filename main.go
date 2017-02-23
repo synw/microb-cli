@@ -295,18 +295,6 @@ func main(){
         		ctx.Println("Please provide two arguments: ex: set debug true")
         		return
         	}
-			cmd := ctx.Args[0]
-			is_valid := false
-        	valid_args := []string{"verbosity", "debug"}
-        	for _, valid_arg := range(valid_args) {
-        		if  cmd == valid_arg {
-        			is_valid = true
-        			break
-        		} 
-        	}
-        	if is_valid != true {
-        		ctx.Println("Invalid command for set")
-        	}
         	_, err, msg := cmds.SendCmd(ctx, "set", CurrentServer)
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
@@ -329,6 +317,27 @@ func main(){
         		if ctx.Args[0] == "status" {
         			_, err, msg = cmds.SendCmd(ctx, "db_status", CurrentServer)
         		}
+        	}
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
+    // SERVER
+    shell.AddCmd(&ishell.Cmd{
+        Name: "server",
+        Help: "Start/stop/restart server: server restart",
+        Func: func(ctx *ishell.Context) {
+        	var msg string
+        	var err error
+        	num_args := len(ctx.Args)
+        	if num_args == 0 {
+        		err = errors.New("Please provide one action: ex: server restart")
+        	} else if num_args == 1 {
+        		_, err, msg = cmds.SendCmd(ctx, "server", CurrentServer)
         	}
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
