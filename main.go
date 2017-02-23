@@ -272,12 +272,53 @@ func main(){
         },
     })
     
-    // DB STATUS
+    // SET
     shell.AddCmd(&ishell.Cmd{
-        Name: "db_status",
-        Help: "Reports main database status",
+        Name: "set",
+        Help: "Mutates state",
         Func: func(ctx *ishell.Context) {
-        	_, err, msg := cmds.SendCmd(ctx, "db_status", CurrentServer)
+        	if len(ctx.Args) == 0 {
+        		ctx.Println("What do you want to set? Please provide arguments")
+        		return
+        	} else if len(ctx.Args) != 2 {
+        		ctx.Println("Please provide two arguments: ex: set debug true")
+        		return
+        	}
+			cmd := ctx.Args[0]
+			is_valid := false
+        	valid_args := []string{"verbosity", "debug"}
+        	for _, valid_arg := range(valid_args) {
+        		if  cmd == valid_arg {
+        			is_valid = true
+        			break
+        		} 
+        	}
+        	if is_valid != true {
+        		ctx.Println("Invalid command for set")
+        	}
+        	_, err, msg := cmds.SendCmd(ctx, "set", CurrentServer)
+        	if err != nil {
+        		ctx.Println(format.ErrorFormated(err))
+        	} else {
+        		ctx.Println(msg)
+        	}
+        },
+    })
+    
+    // DB
+    shell.AddCmd(&ishell.Cmd{
+        Name: "db",
+        Help: "Database commands",
+        Func: func(ctx *ishell.Context) {
+        	var msg string
+        	var err error
+        	if len(ctx.Args) == 0 {
+        		_, err, msg = cmds.SendCmd(ctx, "db_status", CurrentServer)
+        	} else if len(ctx.Args) == 1 {
+        		if ctx.Args[0] == "status" {
+        			_, err, msg = cmds.SendCmd(ctx, "db_status", CurrentServer)
+        		}
+        	}
         	if err != nil {
         		ctx.Println(format.ErrorFormated(err))
         	} else {
@@ -299,6 +340,6 @@ func main(){
         	}
         },
     })
-     
+    shell.SetHomeHistoryPath(".ishell_history")
     shell.Start()
 }

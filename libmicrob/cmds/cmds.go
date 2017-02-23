@@ -100,10 +100,8 @@ func sendCommand(command *datatypes.Command, server *datatypes.Server) error {
 
 func getArgs(ctx *ishell.Context) []interface{} {
 	var args []interface{}
-	if len(ctx.Args) > 1 {
-		for i, _ := range(args) {
-			args = append(args, ctx.Args[i])
-		}
+	for _, arg := range(ctx.Args) {
+		args = append(args, arg)
 	}
 	return args
 }
