@@ -1,22 +1,44 @@
 package conf
 
 import (
-	"fmt"
+	"errors"
 	"github.com/spf13/viper"
+	"github.com/synw/terr"
+	"github.com/synw/microb/libmicrob/datatypes"
 )
 
 
-func GetCliConf() map[string]interface{} {
-	viper.SetConfigName("dev_config")
+func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
+	if dev_mode {
+		viper.SetConfigName("dev_config")
+	} else {
+		viper.SetConfigName("config")
+	}
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.microb-cli")
 	err := viper.ReadInConfig()
+	servers := make(map[string]*datatypes.Server)
 	if err != nil {
-	    panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		switch err.(type) {
+		case viper.ConfigParseError:
+			trace := terr.New("getServers", err)
+			return servers, trace
+		default:
+			err := errors.New("Unable to locate config file")
+			trace := terr.New("getServers", err)
+			return servers, trace
+		}
 	}
-	conf := make(map[string]interface{})
-	conf["servers"] = viper.Get("servers")
-	viper.SetDefault("debug", false)
-	conf["debug"] = viper.Get("debug")
-	return conf
+	available_servers := viper.Get("servers").([]interface{})	
+	for i, _ := range available_servers {
+		sv := available_servers[i].(map[string]interface{})
+		domain := sv["domain"].(string)
+		host :=  sv["http_host"].(string)
+		port := int(sv["http_port"].(float64))
+		wshost := sv["centrifugo_host"].(string)
+		wsport := int(sv["centrifugo_port"].(float64))
+		wskey := sv["centrifugo_key"].(string)
+		servers[domain] = &datatypes.Server{domain, host, port, wshost, wsport, wskey}
+	}
+	return servers, nil
 }

@@ -3,21 +3,19 @@
 	"servers":[
 		{
 		"domain": "local",
-		"http_host":"localhost",
-		"http_port":"8081",
+		"http_host":"lobalhost",
+		"http_port":8081,
 		"centrifugo_host":"localhost",
-		"centrifugo_port":"8001",
-		"centrifugo_secret_key":"secret_key",
-		"commands_brocker": "changefeeds"
+		"centrifugo_port":8001,
+		"centrifugo_key":"secret_key"
 		},
 		{
 		"domain": "local2",
 		"http_host":"localhost",
-		"http_port":"8082",
+		"http_port":8082,
 		"centrifugo_host":"localhost",
-		"centrifugo_port":"8001",
-		"centrifugo_secret_key":"secret_key",
-		"commands_brocker": "websockets"
+		"centrifugo_port":8001,
+		"centrifugo_key":"secret_key"
 		}
 	]
 }
