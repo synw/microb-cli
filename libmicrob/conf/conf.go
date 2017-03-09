@@ -38,7 +38,8 @@ func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
 		wshost := sv["centrifugo_host"].(string)
 		wsport := int(sv["centrifugo_port"].(float64))
 		wskey := sv["centrifugo_key"].(string)
-		servers[domain] = &datatypes.Server{domain, host, port, wshost, wsport, wskey}
+		comchan := sv["command_channel"].(string)		
+		servers[domain] = &datatypes.Server{domain, host, port, wshost, wsport, wskey, comchan}
 	}
 	return servers, nil
 }

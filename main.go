@@ -27,6 +27,11 @@ func main() {
 	if state.Verbosity > 2 {
 		fmt.Println(terr.Ok("State initialized"))
 	}
+	srvs := "Available servers:"
+	for name, _ := range(state.Servers) {
+		srvs = srvs+" "+name
+	}
+	fmt.Println(srvs)
 	shell.SetHomeHistoryPath(".ishell_history")
 	// commands
 	shell = cmd.GetCmds(shell)

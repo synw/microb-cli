@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/synw/terr"
 	"github.com/synw/centcom"
-	"github.com/synw/centcom/ws"
 	"github.com/synw/microb/libmicrob/datatypes"
 	"github.com/synw/microb-cli/libmicrob/conf"
 )
@@ -12,6 +11,7 @@ import (
 
 var Servers map[string]*datatypes.Server
 var Server *datatypes.Server
+var Cli *centcom.Cli
 var Verbosity int = 1
 
 
@@ -33,25 +33,27 @@ func InitState(dev_mode bool, verbosity int) (*terr.Trace) {
 	return nil
 }
 
-func InitWsCli() (*ws.Cli, *terr.Trace) {
-	cli := ws.NewClient(Server.WsHost, Server.WsPort, Server.WsKey)
+func InitServer() *terr.Trace {
+	centcom.SetVerbosity(Verbosity)
+	cli := centcom.NewClient(Server.WsHost, Server.WsPort, Server.WsKey)
 	cli, err := centcom.Connect(cli)
 	if err != nil {
-		trace := terr.New("ws.InitCli", err)
-		var cli *ws.Cli
-		return cli, trace
+		trace := terr.New("centcom.InitCli", err)
+		return trace
 	}
 	cli.IsConnected = true
-	if Verbosity > 1 {
-		fmt.Println(terr.Ok("Websockets client connected"))
+	if Verbosity > 0 {
+		msg := "Client connected: using command channel "+Server.CmdChannel
+		fmt.Println(terr.Ok(msg))
 	}
 	cli, err = cli.CheckHttp()
 	if err != nil {
-		trace := terr.New("ws.InitCli", err)
-		return cli, trace
+		trace := terr.New("centcom.InitCli", err)
+		return trace
 	}
-	if Verbosity > 1 {
-		fmt.Println(terr.Ok("Websockets http transport ready"))
-	}	
-	return cli, nil
+	if Verbosity > 0 {
+		fmt.Println(terr.Ok("Http transport ready"))
+	}
+	Cli = cli
+	return nil
 }
