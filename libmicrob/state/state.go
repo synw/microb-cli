@@ -34,9 +34,8 @@ func InitState(dev_mode bool, verbosity int) (*terr.Trace) {
 }
 
 func InitServer() *terr.Trace {
-	centcom.SetVerbosity(Verbosity)
 	cli := centcom.NewClient(Server.WsHost, Server.WsPort, Server.WsKey)
-	cli, err := centcom.Connect(cli)
+	err := centcom.Connect(cli)
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)
 		return trace
@@ -46,7 +45,7 @@ func InitServer() *terr.Trace {
 		msg := "Client connected: using command channel "+Server.CmdChannel
 		fmt.Println(terr.Ok(msg))
 	}
-	cli, err = cli.CheckHttp()
+	err = cli.CheckHttp()
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)
 		return trace
