@@ -2,12 +2,13 @@
 	"debug":false,
 	"servers":[
 		{
-		"domain": "local",
+		"domain": "dev",
 		"http_host":"lobalhost",
 		"http_port":8081,
 		"centrifugo_host":"localhost",
 		"centrifugo_port":8001,
-		"centrifugo_key":"secret_key"
+		"centrifugo_key":"secret_key",
+		"command_channel": "cmd:$dev"
 		},
 		{
 		"domain": "local2",
@@ -15,7 +16,8 @@
 		"http_port":8082,
 		"centrifugo_host":"localhost",
 		"centrifugo_port":8001,
-		"centrifugo_key":"secret_key"
+		"centrifugo_key":"secret_key",
+		"command_channel": "cmd:$dev"
 		}
 	]
 }

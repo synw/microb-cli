@@ -3,6 +3,7 @@ package info
 import (
 	"github.com/abiosoft/ishell"
 	"github.com/synw/terr"
+	command "github.com/synw/microb/libmicrob/cmd"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
 )
 
@@ -13,7 +14,7 @@ func Ping() *ishell.Cmd {
         Name: "ping",
         Help: "Ping the current server",
         Func: func(ctx *ishell.Context) {
-        	cmd := handler.New("ping", "cli", "")
+        	cmd := command.New("ping", "cli", "")
         	cmd, timeout, trace := handler.SendCmd(cmd, ctx)
         	if trace != nil {
         		trace = terr.Pass("cmd.info.Ping", trace)
