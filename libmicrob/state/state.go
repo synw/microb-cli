@@ -2,6 +2,7 @@ package state
 
 import (
 	"fmt"
+	"errors"
 	"github.com/synw/terr"
 	"github.com/synw/centcom"
 	"github.com/synw/microb/libmicrob/datatypes"
@@ -42,7 +43,7 @@ func InitServer() *terr.Trace {
 	}
 	cli.IsConnected = true
 	if Verbosity > 0 {
-		msg := "Client connected: using command channel "+Server.CmdChannel
+		msg := "Client connected: using command channel "+Server.CmdChanIn
 		fmt.Println(terr.Ok(msg))
 	}
 	err = cli.CheckHttp()
@@ -54,5 +55,11 @@ func InitServer() *terr.Trace {
 		fmt.Println(terr.Ok("Http transport ready"))
 	}
 	Cli = cli
+	err = Cli.Subscribe(Server.CmdChanOut)
+	if err != nil {
+		err := errors.New(err.Error())
+		trace := terr.New("state.InitServer", err)		
+		return trace
+	}
 	return nil
 }

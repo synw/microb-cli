@@ -34,17 +34,10 @@ func SendCmd(command *datatypes.Command, ctx *ishell.Context) (*datatypes.Comman
 	}
 	trace := sendCommand(command)
 	if trace != nil {
-		trace := terr.Pass("cmd.handler.SendCmd", trace)
+		trace := terr.Pass("cmd.handler.SendCmd from sendCommand", trace)
 		return command, timeout, trace
 	}
 	// wait for results
-	err := state.Cli.Subscribe(state.Server.CmdChannel)
-	if err != nil {
-		err := errors.New(err.Error())
-		trace := terr.New("cmd.handler.SendCmd", err)		
-		return command, timeout, trace
-	}
-	defer state.Cli.Unsubscribe(state.Server.CmdChannel)
 	select {
 	case returnCmd := <- state.Cli.Channels:
 		com, _ := cmd.CmdFromPayload(returnCmd.Payload)
@@ -65,7 +58,7 @@ func sendCommand(command *datatypes.Command) *terr.Trace {
 		trace := terr.New("cmd.handler.sendCommand", err)
 		return trace
 	}
-	_, err = state.Cli.Http.Publish(state.Server.CmdChannel, payload)
+	_, err = state.Cli.Http.Publish(state.Server.CmdChanIn, payload)
 	if err != nil {
 		trace := terr.New("cmd.handler.sendCommand", err)
 		return trace
