@@ -41,8 +41,16 @@ func SendCmd(command *datatypes.Command, ctx *ishell.Context) (*datatypes.Comman
 	select {
 	case returnCmd := <- state.Cli.Channels:
 		com, _ := cmd.CmdFromPayload(returnCmd.Payload)
-		for _, val := range(com.ReturnValues) {
-			ctx.Println(val.(string))
+		if com.Error != nil {
+			ctx.Println("Error executing the command", com.Error)
+		} else {
+			for i, val := range(com.ReturnValues) {
+				if (i == 0) {
+					ctx.Println(terr.Ok(val.(string)))	
+				} else {
+					ctx.Println(val.(string))
+				}
+			}
 		}
 	case <-time.After(10*time.Second):
 		return command, true, nil
