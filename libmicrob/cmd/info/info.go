@@ -20,6 +20,30 @@ func Ping() *ishell.Cmd {
         		trace = terr.Pass("cmd.info.Ping", trace)
         		msg := trace.Formatc()
         		ctx.Println(msg)
+        		return
+        	}
+        	if timeout == true {
+        		err := terr.Err("Timeout: server is not responding")
+				ctx.Println(err.Error())
+        	}
+        	return
+        },
+    }
+    return command
+}
+
+func Http() *ishell.Cmd {
+    command := &ishell.Cmd{
+        Name: "http",
+        Help: "Retrieve the state of the http server",
+        Func: func(ctx *ishell.Context) {
+        	cmd := command.New("http", "cli", "")
+        	cmd, timeout, trace := handler.SendCmd(cmd, ctx)
+        	if trace != nil {
+        		trace = terr.Pass("cmd.info.Http", trace)
+        		msg := trace.Formatc()
+        		ctx.Println(msg)
+        		return
         	}
         	if timeout == true {
         		err := terr.Err("Timeout: server is not responding")

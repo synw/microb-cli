@@ -14,5 +14,6 @@ func GetCmds(shell *ishell.Shell) *ishell.Shell {
 	shell.AddCmd(info.Ping())
 	shell.AddCmd(httpServer.Start())
 	shell.AddCmd(httpServer.Stop())
+	shell.AddCmd(info.Http())
 	return shell
 }
