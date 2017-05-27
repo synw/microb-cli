@@ -8,6 +8,7 @@ import (
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
 	"github.com/synw/microb-cli/libmicrob/state"
 	command "github.com/synw/microb/libmicrob/cmd"
+	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 )
 
@@ -16,7 +17,7 @@ func Start() *ishell.Cmd {
 		Name: "start",
 		Help: "Start the http server",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("start", state.HttpService, "cli", "")
+			cmd := command.New("start", services.HttpService, "cli", "")
 			cmd, timeout, trace := handler.SendCmd(cmd, ctx)
 			if trace != nil {
 				trace = terr.Pass("cmd.serve.Start", trace)

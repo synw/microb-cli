@@ -6,7 +6,6 @@ import (
 	"github.com/synw/centcom"
 	"github.com/synw/microb-cli/libmicrob/conf"
 	"github.com/synw/microb/libmicrob/datatypes"
-	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 )
 
@@ -14,8 +13,6 @@ var Servers map[string]*datatypes.Server
 var Server *datatypes.Server
 var Cli *centcom.Cli
 var Verbosity int = 1
-var InfoService = services.New("info")
-var HttpService = services.New("http")
 
 func InitState(dev_mode bool, verbosity int) *terr.Trace {
 	Verbosity = verbosity

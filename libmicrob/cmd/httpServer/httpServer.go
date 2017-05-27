@@ -3,8 +3,8 @@ package httpServer
 import (
 	"github.com/abiosoft/ishell"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
-	"github.com/synw/microb-cli/libmicrob/state"
 	command "github.com/synw/microb/libmicrob/cmd"
+	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 )
 
@@ -13,7 +13,7 @@ func Start() *ishell.Cmd {
 		Name: "start",
 		Help: "Start the http server",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("start", state.HttpService, "cli", "")
+			cmd := command.New("start", services.HttpService, "cli", "")
 			cmd, timeout, tr := handler.SendCmd(cmd, ctx)
 			if tr != nil {
 				tr = terr.Pass("cmd.httpServer.Start", tr)
@@ -35,7 +35,7 @@ func Stop() *ishell.Cmd {
 		Name: "stop",
 		Help: "Stop the http server",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("stop", state.HttpService, "http", "cli", "")
+			cmd := command.New("stop", services.HttpService, "http", "cli", "")
 			cmd, timeout, tr := handler.SendCmd(cmd, ctx)
 			if tr != nil {
 				tr = terr.Pass("cmd.httpServer.Stop", tr)
