@@ -1,22 +1,23 @@
 package state
 
 import (
-	"fmt"
 	"errors"
-	"github.com/synw/terr"
+	"fmt"
 	"github.com/synw/centcom"
-	"github.com/synw/microb/libmicrob/datatypes"
 	"github.com/synw/microb-cli/libmicrob/conf"
+	"github.com/synw/microb/libmicrob/datatypes"
+	"github.com/synw/microb/services"
+	"github.com/synw/terr"
 )
-
 
 var Servers map[string]*datatypes.Server
 var Server *datatypes.Server
 var Cli *centcom.Cli
 var Verbosity int = 1
+var InfoService = services.New("info")
+var HttpService = services.New("http")
 
-
-func InitState(dev_mode bool, verbosity int) (*terr.Trace) {
+func InitState(dev_mode bool, verbosity int) *terr.Trace {
 	Verbosity = verbosity
 	servers, trace := conf.GetServers(dev_mode)
 	if trace != nil {
@@ -26,8 +27,8 @@ func InitState(dev_mode bool, verbosity int) (*terr.Trace) {
 	Servers = servers
 	if Verbosity > 2 {
 		msg := "Found servers "
-		for name, _ := range(Servers) {
-			msg = msg+name+" "
+		for name, _ := range Servers {
+			msg = msg + name + " "
 		}
 		fmt.Println(msg)
 	}
@@ -43,7 +44,7 @@ func InitServer() *terr.Trace {
 	}
 	cli.IsConnected = true
 	if Verbosity > 0 {
-		msg := "Client connected: using command channel "+Server.CmdChanIn
+		msg := "Client connected: using command channel " + Server.CmdChanIn
 		fmt.Println(terr.Ok(msg))
 	}
 	err = cli.CheckHttp()
@@ -58,7 +59,7 @@ func InitServer() *terr.Trace {
 	err = Cli.Subscribe(Server.CmdChanOut)
 	if err != nil {
 		err := errors.New(err.Error())
-		trace := terr.New("state.InitServer", err)		
+		trace := terr.New("state.InitServer", err)
 		return trace
 	}
 	return nil

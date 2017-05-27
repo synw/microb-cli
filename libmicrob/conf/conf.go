@@ -3,10 +3,10 @@ package conf
 import (
 	"errors"
 	"github.com/spf13/viper"
-	"github.com/synw/terr"
+	globalConf "github.com/synw/microb/libmicrob/conf"
 	"github.com/synw/microb/libmicrob/datatypes"
+	"github.com/synw/terr"
 )
-
 
 func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
 	if dev_mode {
@@ -29,18 +29,15 @@ func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
 			return servers, trace
 		}
 	}
-	available_servers := viper.Get("servers").([]interface{})	
+	available_servers := viper.Get("servers").([]interface{})
 	for i, _ := range available_servers {
 		sv := available_servers[i].(map[string]interface{})
-		domain := sv["domain"].(string)
-		host :=  sv["http_host"].(string)
-		port := int(sv["http_port"].(float64))
+		name := sv["name"].(string)
 		wshost := sv["centrifugo_host"].(string)
 		wsport := int(sv["centrifugo_port"].(float64))
 		wskey := sv["centrifugo_key"].(string)
-		comchan_in := "cmd:$"+domain+"_in"
-		comchan_out := "cmd:$"+domain+"_out"
-		servers[domain] = &datatypes.Server{domain, host, port, wshost, wsport, wskey, comchan_in, comchan_out}
+		comchan_in, comchan_out := globalConf.GetComChan(name)
+		servers[name] = &datatypes.Server{name, wshost, wsport, wskey, comchan_in, comchan_out}
 	}
 	return servers, nil
 }
