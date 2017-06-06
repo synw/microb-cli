@@ -4,7 +4,6 @@ import (
 	"github.com/abiosoft/ishell"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
 	command "github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 )
 
@@ -14,7 +13,7 @@ func Ping() *ishell.Cmd {
 		Name: "ping",
 		Help: "Ping the current server",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("ping", services.InfoService, "cli", "")
+			cmd := command.New("ping", "info", "cli", "")
 			cmd, timeout, trace := handler.SendCmd(cmd, ctx)
 			if trace != nil {
 				trace = terr.Pass("cmd.info.Ping", trace)
@@ -37,7 +36,7 @@ func Http() *ishell.Cmd {
 		Name: "http",
 		Help: "Retrieve the state of the http server",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("http", services.HttpService, "cli", "")
+			cmd := command.New("http", "info", "cli", "")
 			cmd, timeout, trace := handler.SendCmd(cmd, ctx)
 			if trace != nil {
 				trace = terr.Pass("cmd.info.Http", trace)

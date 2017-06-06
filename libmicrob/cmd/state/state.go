@@ -5,33 +5,9 @@ import (
 	"errors"
 	"github.com/abiosoft/ishell"
 	"github.com/acmacalister/skittles"
-	"github.com/synw/microb-cli/libmicrob/cmd/handler"
 	"github.com/synw/microb-cli/libmicrob/state"
-	command "github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 )
-
-func Start() *ishell.Cmd {
-	command := &ishell.Cmd{
-		Name: "start",
-		Help: "Start the http server",
-		Func: func(ctx *ishell.Context) {
-			cmd := command.New("start", services.HttpService, "cli", "")
-			cmd, timeout, trace := handler.SendCmd(cmd, ctx)
-			if trace != nil {
-				trace = terr.Pass("cmd.serve.Start", trace)
-				msg := trace.Formatc()
-				ctx.Println(msg)
-			}
-			if timeout == true {
-				err := terr.Err("Timeout: server is not responding")
-				ctx.Println(err.Error())
-			}
-		},
-	}
-	return command
-}
 
 func Using() *ishell.Cmd {
 	command := &ishell.Cmd{
