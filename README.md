@@ -1,6 +1,6 @@
 # Microb terminal client
 
-Terminal client for [Microb](https://github.com/synw/microb) servers
+Terminal client for [Microb](https://github.com/synw/microb) services
 
 Configure your servers in `config.json`
 
@@ -21,21 +21,11 @@ Configure your servers in `config.json`
 
 - **ping**
 
-- **time**: measures server response times for an url
+### Http service
 
-- **routes**: view server side routes currently used
+- **start**: start the http server
 
-### Database
-
-- **get**: returns the content for url
-
-- **db_status**: reports the database status
-
-### Server state
-
-- **reparse_templates**: refresh templates in memory
-
-- **update_routes**: updates client side routes
+- **stop**: stop the http server
 
 Credits
 -------
