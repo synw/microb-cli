@@ -1,15 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/abiosoft/ishell"
-	"github.com/synw/terr"
-	"github.com/synw/microb-cli/libmicrob/state"
 	"github.com/synw/microb-cli/libmicrob/cmd"
+	"github.com/synw/microb-cli/libmicrob/state"
+	"github.com/synw/microb-cli/services"
+	"github.com/synw/terr"
 )
-
 
 var dev_mode = flag.Bool("d", false, "Dev mode")
 var verbosity = flag.Int("v", 1, "Verbosity")
@@ -28,13 +28,14 @@ func main() {
 		fmt.Println(terr.Ok("State initialized"))
 	}
 	srvs := "Available servers:"
-	for name, _ := range(state.Servers) {
-		srvs = srvs+" "+name
+	for name, _ := range state.Servers {
+		srvs = srvs + " " + name
 	}
 	fmt.Println(srvs)
 	shell.SetHomeHistoryPath(".ishell_history")
 	// commands
 	shell = cmd.GetCmds(shell)
+	shell = services.GetCmds(shell)
 	// start shell
-    shell.Start()
+	shell.Start()
 }
