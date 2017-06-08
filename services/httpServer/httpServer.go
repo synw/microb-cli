@@ -7,21 +7,40 @@ import (
 	"github.com/synw/terr"
 )
 
-func Start() *ishell.Cmd {
+func Cmds() *ishell.Cmd {
 	command := &ishell.Cmd{
-		Name: "start",
-		Help: "Start the http server",
+		Name: "http",
+		Help: "Http server commands: start, stop",
 		Func: func(ctx *ishell.Context) {
-			cmd := command.New("start", "http", "cli", "")
-			cmd, timeout, tr := handler.SendCmd(cmd, ctx)
-			if tr != nil {
-				tr = terr.Pass("cmd.httpServer.Start", tr)
-				msg := tr.Formatc()
-				ctx.Println(msg)
-			}
-			if timeout == true {
-				err := terr.Err("Timeout: server is not responding")
+			if len(ctx.Args) == 0 {
+				err := terr.Err("A parameter is required: ex: http start")
 				ctx.Println(err.Error())
+				return
+			}
+			if ctx.Args[0] == "start" {
+				cmd := command.New("start", "http", "cli", "")
+				cmd, timeout, tr := handler.SendCmd(cmd, ctx)
+				if tr != nil {
+					tr = terr.Pass("cmd.httpServer.Start", tr)
+					msg := tr.Formatc()
+					ctx.Println(msg)
+				}
+				if timeout == true {
+					err := terr.Err("Timeout: server is not responding")
+					ctx.Println(err.Error())
+				}
+			} else if ctx.Args[0] == "stop" {
+				cmd := command.New("stop", "http", "http", "cli", "")
+				cmd, timeout, tr := handler.SendCmd(cmd, ctx)
+				if tr != nil {
+					tr = terr.Pass("cmd.httpServer.Stop", tr)
+					msg := tr.Formatc()
+					ctx.Println(msg)
+				}
+				if timeout == true {
+					err := terr.Err("Timeout: server is not responding")
+					ctx.Println(err.Error())
+				}
 			}
 			return
 		},
@@ -29,28 +48,7 @@ func Start() *ishell.Cmd {
 	return command
 }
 
-func Stop() *ishell.Cmd {
-	command := &ishell.Cmd{
-		Name: "stop",
-		Help: "Stop the http server",
-		Func: func(ctx *ishell.Context) {
-			cmd := command.New("stop", "http", "http", "cli", "")
-			cmd, timeout, tr := handler.SendCmd(cmd, ctx)
-			if tr != nil {
-				tr = terr.Pass("cmd.httpServer.Stop", tr)
-				msg := tr.Formatc()
-				ctx.Println(msg)
-			}
-			if timeout == true {
-				err := terr.Err("Timeout: server is not responding")
-				ctx.Println(err.Error())
-			}
-			return
-		},
-	}
-	return command
-}
-
+/*
 func Http() *ishell.Cmd {
 	command := &ishell.Cmd{
 		Name: "http",
@@ -72,4 +70,4 @@ func Http() *ishell.Cmd {
 		},
 	}
 	return command
-}
+}*/
