@@ -6,13 +6,13 @@ import (
 	"github.com/abiosoft/ishell"
 	"github.com/synw/microb-cli/libmicrob/state"
 	"github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/libmicrob/datatypes"
+	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 	"time"
 )
 
-func SendCmd(command *datatypes.Command, ctx *ishell.Context) (*datatypes.Command, bool, *terr.Trace) {
+func SendCmd(command *types.Command, ctx *ishell.Context) (*types.Command, bool, *terr.Trace) {
 	timeout := false
 	// check if server is set
 	if state.Server == nil {
@@ -47,7 +47,7 @@ func SendCmd(command *datatypes.Command, ctx *ishell.Context) (*datatypes.Comman
 		} else {
 			for i, val := range com.ReturnValues {
 				if i == 0 {
-					ctx.Println(terr.Ok(val.(string)))
+					terr.Ok(val.(string))
 				} else {
 					ctx.Println(val.(string))
 				}
@@ -59,7 +59,7 @@ func SendCmd(command *datatypes.Command, ctx *ishell.Context) (*datatypes.Comman
 	return command, timeout, nil
 }
 
-func sendCommand(command *datatypes.Command) *terr.Trace {
+func sendCommand(command *types.Command) *terr.Trace {
 	payload, err := json.Marshal(command)
 	if err != nil {
 		msg := "Unable to marshall json: " + err.Error()

@@ -25,7 +25,7 @@ func main() {
 		terr.Fatal("main", trace)
 	}
 	if state.Verbosity > 2 {
-		fmt.Println(terr.Ok("State initialized"))
+		terr.Ok("State initialized")
 	}
 	srvs := "Available servers:"
 	for name, _ := range state.Servers {

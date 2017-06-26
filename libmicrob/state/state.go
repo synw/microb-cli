@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/synw/centcom"
 	"github.com/synw/microb-cli/libmicrob/conf"
-	"github.com/synw/microb/libmicrob/datatypes"
+	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
-var Servers map[string]*datatypes.Server
-var Server *datatypes.Server
+var Servers map[string]*types.Server
+var Server *types.Server
 var Cli *centcom.Cli
 var Verbosity int = 1
 
@@ -42,7 +42,7 @@ func InitServer() *terr.Trace {
 	cli.IsConnected = true
 	if Verbosity > 0 {
 		msg := "Client connected: using command channel " + Server.CmdChanIn
-		fmt.Println(terr.Ok(msg))
+		terr.Ok(msg)
 	}
 	err = cli.CheckHttp()
 	if err != nil {
@@ -50,7 +50,7 @@ func InitServer() *terr.Trace {
 		return trace
 	}
 	if Verbosity > 0 {
-		fmt.Println(terr.Ok("Http transport ready"))
+		terr.Ok("Http transport ready")
 	}
 	Cli = cli
 	err = Cli.Subscribe(Server.CmdChanOut)

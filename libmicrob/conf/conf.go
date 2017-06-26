@@ -4,11 +4,11 @@ import (
 	"errors"
 	"github.com/spf13/viper"
 	globalConf "github.com/synw/microb/libmicrob/conf"
-	"github.com/synw/microb/libmicrob/datatypes"
+	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
-func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
+func GetServers(dev_mode bool) (map[string]*types.Server, *terr.Trace) {
 	if dev_mode {
 		viper.SetConfigName("dev_config")
 	} else {
@@ -17,7 +17,7 @@ func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.microb-cli")
 	err := viper.ReadInConfig()
-	servers := make(map[string]*datatypes.Server)
+	servers := make(map[string]*types.Server)
 	if err != nil {
 		switch err.(type) {
 		case viper.ConfigParseError:
@@ -37,7 +37,7 @@ func GetServers(dev_mode bool) (map[string]*datatypes.Server, *terr.Trace) {
 		wsport := int(sv["centrifugo_port"].(float64))
 		wskey := sv["centrifugo_key"].(string)
 		comchan_in, comchan_out := globalConf.GetComChan(name)
-		servers[name] = &datatypes.Server{name, wshost, wsport, wskey, comchan_in, comchan_out}
+		servers[name] = &types.Server{name, wshost, wsport, wskey, comchan_in, comchan_out}
 	}
 	return servers, nil
 }
