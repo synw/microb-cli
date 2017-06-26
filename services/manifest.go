@@ -2,9 +2,9 @@ package services
 
 import (
 	"github.com/abiosoft/ishell"
-	"github.com/synw/microb-cli/services/httpServer"
+	http "github.com/synw/microb/services/httpServer/cmd/cli"
 )
 
 var commands = []*ishell.Cmd{
-	httpServer.Cmds(),
+	http.Cmds(),
 }
