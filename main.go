@@ -11,14 +11,14 @@ import (
 	"github.com/synw/terr"
 )
 
-var dev_mode = flag.Bool("d", false, "Dev mode")
+var dev = flag.Bool("d", false, "Dev mode")
 var verbosity = flag.Int("v", 1, "Verbosity")
 var shell = ishell.New()
 
 func main() {
 	flag.Parse()
 	// read conf
-	trace := state.InitState(*dev_mode, *verbosity)
+	trace := state.InitState(*dev, *verbosity)
 	if trace != nil {
 		err := errors.New("Unable to init state")
 		trace := terr.Add("main", err, trace)
@@ -35,7 +35,7 @@ func main() {
 	shell.SetHomeHistoryPath(".ishell_history")
 	// commands
 	shell = cmd.GetCmds(shell)
-	shell = services.GetCmds(shell)
+	shell = services.GetCmds(shell, *dev)
 	// start shell
 	shell.Start()
 }

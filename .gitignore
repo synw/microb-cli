@@ -1,3 +1,5 @@
+dev_manifest.go
+dev_config.json
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
@@ -7,7 +9,6 @@
 _obj
 _test
 .project
-dev_*
 
 # Architecture specific extensions/prefixes
 *.[568vq]
