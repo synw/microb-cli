@@ -33,11 +33,10 @@ func GetServers(dev_mode bool) (map[string]*types.Server, *terr.Trace) {
 	for i, _ := range available_servers {
 		sv := available_servers[i].(map[string]interface{})
 		name := sv["name"].(string)
-		wshost := sv["centrifugo_host"].(string)
-		wsport := int(sv["centrifugo_port"].(float64))
+		wsaddr := sv["centrifugo_addr"].(string)
 		wskey := sv["centrifugo_key"].(string)
 		comchan_in, comchan_out := globalConf.GetComChan(name)
-		servers[name] = &types.Server{name, wshost, wsport, wskey, comchan_in, comchan_out}
+		servers[name] = &types.Server{name, wsaddr, wskey, comchan_in, comchan_out}
 	}
 	return servers, nil
 }

@@ -2,22 +2,14 @@
 	"debug":false,
 	"servers":[
 		{
-		"domain": "dev",
-		"http_host":"lobalhost",
-		"http_port":8081,
-		"centrifugo_host":"localhost",
-		"centrifugo_port":8001,
-		"centrifugo_key":"secret_key",
-		"command_channel": "cmd:$dev"
+		"name": "localhost",
+		"centrifugo_addr":"http://localhost:8001",
+		"centrifugo_key":"secret_key"
 		},
 		{
-		"domain": "local2",
-		"http_host":"localhost",
-		"http_port":8082,
-		"centrifugo_host":"localhost",
-		"centrifugo_port":8001,
-		"centrifugo_key":"secret_key",
-		"command_channel": "cmd:$dev"
+		"name": "local2",
+		"centrifugo_addr":"http://localhost:8002",
+		"centrifugo_key":"secret_key"
 		}
 	]
 }

@@ -33,7 +33,7 @@ func InitState(dev_mode bool, verbosity int) *terr.Trace {
 }
 
 func InitServer() *terr.Trace {
-	cli := centcom.NewClient(Server.WsHost, Server.WsPort, Server.WsKey)
+	cli := centcom.NewClient(Server.WsAddr, Server.WsKey)
 	err := centcom.Connect(cli)
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)
