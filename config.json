@@ -3,12 +3,12 @@
 	"servers":[
 		{
 		"name": "localhost",
-		"centrifugo_addr":"http://localhost:8001",
+		"centrifugo_addr":"localhost:8001",
 		"centrifugo_key":"secret_key"
 		},
 		{
-		"name": "local2",
-		"centrifugo_addr":"http://localhost:8002",
+		"name": "localhost2",
+		"centrifugo_addr":"localhost:8002",
 		"centrifugo_key":"secret_key"
 		}
 	]
