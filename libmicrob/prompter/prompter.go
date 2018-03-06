@@ -17,7 +17,7 @@ func executor(in string) {
 	args = args[1:]
 	// get cmd args and encode them to an interface
 	var cmdargs []interface{}
-	if len(args) > 1 {
+	if len(args) > 0 {
 		var interfaceSlice []interface{} = make([]interface{}, len(args))
 		for i, d := range args {
 			interfaceSlice[i] = d

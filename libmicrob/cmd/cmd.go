@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	m "github.com/synw/microb/libmicrob"
 	"github.com/synw/microb/libmicrob/types"
 )
@@ -22,5 +23,6 @@ func Use() *types.Cmd {
 func use(cmd *types.Cmd) *types.Cmd {
 	server := cmd.Args[0].(string)
 	m.Debug(server)
+	fmt.Println(len(cmd.Args), cmd.Args)
 	return cmd
 }
