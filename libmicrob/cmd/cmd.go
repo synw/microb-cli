@@ -1,14 +1,26 @@
 package cmd
 
 import (
-	"github.com/abiosoft/ishell"
-	"github.com/synw/microb-cli/libmicrob/cmd/info"
-	cmd_state "github.com/synw/microb-cli/libmicrob/cmd/state"
+	m "github.com/synw/microb/libmicrob"
+	"github.com/synw/microb/libmicrob/types"
 )
 
-func GetCmds(shell *ishell.Shell) *ishell.Shell {
-	shell.AddCmd(cmd_state.Use())
-	shell.AddCmd(cmd_state.Using())
-	shell.AddCmd(info.Ping())
-	return shell
+func GetCmds() map[string]*types.Cmd {
+	cmds := make(map[string]*types.Cmd)
+	cmds["use"] = Use()
+	return cmds
+}
+
+func Use() *types.Cmd {
+	cmd := &types.Cmd{
+		Name: "use",
+		Exec: use,
+	}
+	return cmd
+}
+
+func use(cmd *types.Cmd) *types.Cmd {
+	server := cmd.Args[0].(string)
+	m.Debug(server)
+	return cmd
 }

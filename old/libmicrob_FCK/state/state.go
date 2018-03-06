@@ -4,21 +4,25 @@ import (
 	"errors"
 	"fmt"
 	"github.com/synw/centcom"
+	"github.com/synw/microb-cli/libmicrob/cmd"
 	"github.com/synw/microb-cli/libmicrob/conf"
+	"github.com/synw/microb/libmicrob/cmd"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
+	"github.com/synw/microb-cli/libmicrob/cmd/info"
 )
 
-var Servers map[string]*types.WsServer
-var Server *types.WsServer
+var Servers map[string]*types.Server
+var Server *types.Server
 var Cli *centcom.Cli
 var Verbosity int = 1
+var Cmds []*types.Command
 
-func Init(verbosity int) *terr.Trace {
+func InitState(dev_mode bool, verbosity int) *terr.Trace {
 	Verbosity = verbosity
-	servers, trace := conf.GetServers()
+	servers, trace := conf.GetServers(dev_mode)
 	if trace != nil {
-		trace := terr.Pass("state.Init", trace)
+		trace := terr.Pass("state.InitState", trace)
 		return trace
 	}
 	Servers = servers
@@ -29,11 +33,17 @@ func Init(verbosity int) *terr.Trace {
 		}
 		fmt.Println(msg)
 	}
+	Cmds = GetCmds()
 	return nil
 }
 
+func GetCmds() []*types.Command { 
+	ping = info.Ping()
+	return [ping]
+}
+
 func InitServer() *terr.Trace {
-	cli := centcom.NewClient(Server.Addr, Server.Key)
+	cli := centcom.NewClient(Server.WsAddr, Server.WsKey)
 	err := centcom.Connect(cli)
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)

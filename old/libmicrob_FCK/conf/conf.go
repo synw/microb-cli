@@ -3,22 +3,21 @@ package conf
 import (
 	"errors"
 	"github.com/spf13/viper"
+	globalConf "github.com/synw/microb/libmicrob/conf"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
-func getComChan(name string) (string, string) {
-	comchan_in := "cmd:$" + name + "_in"
-	comchan_out := "cmd:$" + name + "_out"
-	return comchan_in, comchan_out
-}
-
-func GetServers() (map[string]*types.WsServer, *terr.Trace) {
-	viper.SetConfigName("config")
+func GetServers(dev_mode bool) (map[string]*types.Server, *terr.Trace) {
+	if dev_mode {
+		viper.SetConfigName("dev_config")
+	} else {
+		viper.SetConfigName("config")
+	}
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.microb-cli")
 	err := viper.ReadInConfig()
-	servers := make(map[string]*types.WsServer)
+	servers := make(map[string]*types.Server)
 	if err != nil {
 		switch err.(type) {
 		case viper.ConfigParseError:
@@ -36,8 +35,8 @@ func GetServers() (map[string]*types.WsServer, *terr.Trace) {
 		name := sv["name"].(string)
 		wsaddr := sv["centrifugo_addr"].(string)
 		wskey := sv["centrifugo_key"].(string)
-		comchan_in, comchan_out := getComChan(name)
-		servers[name] = &types.WsServer{name, wsaddr, wskey, comchan_in, comchan_out}
+		comchan_in, comchan_out := globalConf.GetComChan(name)
+		servers[name] = &types.Server{name, wsaddr, wskey, comchan_in, comchan_out}
 	}
 	return servers, nil
 }

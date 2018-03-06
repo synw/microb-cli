@@ -4,21 +4,17 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/abiosoft/ishell"
-	"github.com/synw/microb-cli/libmicrob/cmd"
+	"github.com/synw/microb-cli/libmicrob/prompter"
 	"github.com/synw/microb-cli/libmicrob/state"
-	"github.com/synw/microb-cli/services"
 	"github.com/synw/terr"
 )
 
-var dev = flag.Bool("d", false, "Dev mode")
 var verbosity = flag.Int("v", 1, "Verbosity")
-var shell = ishell.New()
 
 func main() {
 	flag.Parse()
 	// read conf
-	trace := state.InitState(*dev, *verbosity)
+	trace := state.Init(*verbosity)
 	if trace != nil {
 		err := errors.New("Unable to init state")
 		trace := terr.Add("main", err, trace)
@@ -32,10 +28,5 @@ func main() {
 		srvs = srvs + " " + name
 	}
 	fmt.Println(srvs)
-	shell.SetHomeHistoryPath(".ishell_history")
-	// commands
-	shell = cmd.GetCmds(shell)
-	shell = services.GetCmds(shell, *dev)
-	// start shell
-	shell.Start()
+	prompter.Prompt()
 }
