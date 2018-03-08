@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"errors"
+	"github.com/synw/microb-cli/libmicrob/state"
 	m "github.com/synw/microb/libmicrob"
 	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/terr"
 )
 
 func GetCmds() map[string]*types.Cmd {
@@ -20,29 +23,38 @@ func Use() *types.Cmd {
 }
 
 func use(cmd *types.Cmd) *types.Cmd {
+	if len(cmd.Args) != 1 {
+		m.Warning("Please provide a server name: ex: use localhost", true)
+		return cmd
+	}
 	server := cmd.Args[0].(string)
-	m.Debug(server)
-	tr := serverExists(server_name)
+	tr := serverExists(server)
 	if tr != nil {
 		tr = terr.Pass("comd.state.Use", tr)
-		tr.Error()
-		return
+		tr.Printc()
+		return cmd
 	}
-	/*state.Server = state.Servers[server_name]
-	// init cli and check server
+	state.Server = state.Servers[server]
 	tr = state.InitServer()
+	if tr != nil {
+		tr = terr.Pass("comd.state.Use", tr)
+		tr.Printc()
+		return cmd
+	}
+	// init cli and check server
 	if tr != nil {
 		err := errors.New("can not connect to websockets server: check your config")
 		tr := terr.Add("cmd.state.Use", err, tr)
-
+		tr.Printc()
+		return cmd
 	} else {
-		msg := "Using server " + server_name
-		ctx.Println(msg)
-	}*/
+		msg := "Connnected to server " + server
+		m.Ready(msg, true)
+	}
 	return cmd
 }
 
-func serverExists(server_name string) *terr.trace {
+func serverExists(server_name string) *terr.Trace {
 	for name, _ := range state.Servers {
 		if server_name == name {
 			return nil
