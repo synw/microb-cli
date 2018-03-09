@@ -11,6 +11,7 @@ import (
 func GetCmds() map[string]*types.Cmd {
 	cmds := make(map[string]*types.Cmd)
 	cmds["use"] = Use()
+	cmds["using"] = Using()
 	return cmds
 }
 
@@ -18,6 +19,23 @@ func Use() *types.Cmd {
 	cmd := &types.Cmd{
 		Name: "use",
 		Exec: use,
+	}
+	return cmd
+}
+
+func Using() *types.Cmd {
+	cmd := &types.Cmd{
+		Name: "using",
+		Exec: using,
+	}
+	return cmd
+}
+
+func using(cmd *types.Cmd) *types.Cmd {
+	if state.Server == nil {
+		m.Warning("No server selected: try the use command: ex: "+m.Bold("use")+" server1", false)
+	} else {
+		m.Msg("Using server "+m.Bold(state.Server.Name), false)
 	}
 	return cmd
 }

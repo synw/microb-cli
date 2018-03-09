@@ -29,6 +29,7 @@ func executor(in string) {
 			cmd.Args = cmdargs
 		}
 		// execute locally and exit if the command has an Exec function
+		// this is used by the client for its local commands
 		if cmd.Exec != nil {
 			cmd = cmd.Exec(cmd)
 			return

@@ -10,7 +10,7 @@ import (
 )
 
 var Servers map[string]*types.WsServer
-var Server *types.WsServer
+var Server *types.WsServer = nil
 var Cli *centcom.Cli
 var Verbosity int = 1
 
