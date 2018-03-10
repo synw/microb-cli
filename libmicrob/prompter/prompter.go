@@ -5,6 +5,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/synw/microb-cli/libmicrob/cmd"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
+	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"strings"
 )
@@ -30,8 +31,9 @@ func executor(in string) {
 		}
 		// execute locally and exit if the command has an Exec function
 		// this is used by the client for its local commands
-		if cmd.Exec != nil {
-			cmd = cmd.Exec(cmd)
+		run := cmd.Exec.(func(*types.Cmd) *types.Cmd)
+		if run != nil {
+			cmd = run(cmd)
 			return
 		}
 		// otherwise send the command to the handler

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"github.com/synw/microb-cli/libmicrob/cmd/handler"
 	"github.com/synw/microb-cli/libmicrob/state"
 	m "github.com/synw/microb/libmicrob"
 	"github.com/synw/microb/libmicrob/types"
@@ -12,6 +13,7 @@ func GetCmds() map[string]*types.Cmd {
 	cmds := make(map[string]*types.Cmd)
 	cmds["use"] = Use()
 	cmds["using"] = Using()
+	cmds["ping"] = Ping()
 	return cmds
 }
 
@@ -27,6 +29,27 @@ func Using() *types.Cmd {
 	cmd := &types.Cmd{
 		Name: "using",
 		Exec: using,
+	}
+	return cmd
+}
+
+func Ping() *types.Cmd {
+	cmd := &types.Cmd{
+		Name: "ping",
+		Exec: ping,
+	}
+	return cmd
+}
+
+func ping(cmd *types.Cmd) *types.Cmd {
+	cmd, timeout, tr := handler.SendCmd(cmd)
+	if tr != nil {
+		tr = terr.Pass("cmd.info.Ping", tr)
+		tr.Print()
+		return cmd
+	}
+	if timeout == true {
+		m.Timeout("The server does not respond", false)
 	}
 	return cmd
 }
