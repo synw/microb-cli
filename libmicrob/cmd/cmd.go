@@ -61,6 +61,7 @@ func GetCmds() map[string]*types.Cmd {
 	cmds["use"] = Use()
 	cmds["using"] = Using()
 	cmds["ping"] = Ping()
+	cmds["services"] = Services()
 	return cmds
 }
 
@@ -88,11 +89,9 @@ func Ping() *types.Cmd {
 }
 
 func Services() *types.Cmd {
-	cmd := &types.Cmd{
-		Name:    "services",
-		Service: "infos",
-		//Exec:    srv,
-	}
+	args := make(map[string]interface{})
+	args["service"] = "infos"
+	cmd := New("services", args)
 	return cmd
 }
 

@@ -13,6 +13,7 @@ var Servers map[string]*types.WsServer
 var Server *types.WsServer = nil
 var Cli *centcom.Cli
 var Verbosity int = 1
+var Services []*types.Service
 
 func Init(verbosity int) *terr.Trace {
 	Verbosity = verbosity

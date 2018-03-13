@@ -28,14 +28,13 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	// send the command
 	tr := sendCommand(cmd)
 	if tr != nil {
-		tr := terr.Pass("cmd.handler.SendCmd from sendCommand", tr)
+		tr := terr.Pass("cmd.handler.SendCmd", tr)
 		return cmd, timeout, tr
 	}
 	// wait for results
 	select {
 	case returnCmd := <-state.Cli.Channels:
 		cmd := command.ConvertPayload(returnCmd.Payload)
-
 		if cmd.ErrMsg != "" {
 			msgs.Error(cmd.ErrMsg)
 		} else {
