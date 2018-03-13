@@ -3,8 +3,8 @@ package cmd
 import (
 	"errors"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
+	"github.com/synw/microb-cli/libmicrob/msgs"
 	"github.com/synw/microb-cli/libmicrob/state"
-	m "github.com/synw/microb/libmicrob"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
@@ -35,8 +35,9 @@ func Using() *types.Cmd {
 
 func Ping() *types.Cmd {
 	cmd := &types.Cmd{
-		Name: "ping",
-		Exec: ping,
+		Name:    "ping",
+		Service: "infos",
+		Exec:    ping,
 	}
 	return cmd
 }
@@ -44,28 +45,28 @@ func Ping() *types.Cmd {
 func ping(cmd *types.Cmd) *types.Cmd {
 	cmd, timeout, tr := handler.SendCmd(cmd)
 	if tr != nil {
-		tr = terr.Pass("cmd.info.Ping", tr)
+		tr = terr.Pass("cmd.Ping", tr)
 		tr.Print()
 		return cmd
 	}
 	if timeout == true {
-		m.Timeout("The server does not respond", false)
+		msgs.Timeout("The server is not responding")
 	}
 	return cmd
 }
 
 func using(cmd *types.Cmd) *types.Cmd {
 	if state.Server == nil {
-		m.Warning("No server selected: try the use command: ex: "+m.Bold("use")+" server1", false)
+		msgs.Warning("No server selected: try the use command: ex: " + msgs.Bold("use") + " server1")
 	} else {
-		m.Msg("Using server "+m.Bold(state.Server.Name), false)
+		msgs.Msg("Using server " + msgs.Bold(state.Server.Name))
 	}
 	return cmd
 }
 
 func use(cmd *types.Cmd) *types.Cmd {
 	if len(cmd.Args) != 1 {
-		m.Warning("Please provide a server name: ex: use localhost", true)
+		msgs.Warning("Please provide a server name: ex: use localhost")
 		return cmd
 	}
 	server := cmd.Args[0].(string)
@@ -90,7 +91,7 @@ func use(cmd *types.Cmd) *types.Cmd {
 		return cmd
 	} else {
 		msg := "Connnected to server " + server
-		m.Ready(msg, true)
+		msgs.Ready(msg)
 	}
 	return cmd
 }

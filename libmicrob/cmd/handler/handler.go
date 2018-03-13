@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"github.com/synw/microb-cli/libmicrob/msgs"
 	"github.com/synw/microb-cli/libmicrob/state"
-	m "github.com/synw/microb/libmicrob"
 	command "github.com/synw/microb/libmicrob/cmd"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
@@ -16,34 +16,36 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	// check if server is set
 	if state.Server == nil {
 		err := errors.New("No server selected. Set it with: use server_name")
-		trace := terr.New("cmd.handler.SendCmd", err)
-		return cmd, timeout, trace
+		tr := terr.New("cmd.handler.SendCmd", err)
+		return cmd, timeout, tr
 	}
 	// check if cli is connected
 	if state.Cli.IsConnected == false {
 		err := errors.New("No connection to server: use server_name")
-		trace := terr.New("cmd.handler.SendCmd", err)
-		return cmd, timeout, trace
+		tr := terr.New("cmd.handler.SendCmd", err)
+		return cmd, timeout, tr
 	}
 	// send the command
-	trace := sendCommand(cmd)
-	if trace != nil {
-		trace := terr.Pass("cmd.handler.SendCmd from sendCommand", trace)
-		return cmd, timeout, trace
+	tr := sendCommand(cmd)
+	if tr != nil {
+		tr := terr.Pass("cmd.handler.SendCmd from sendCommand", tr)
+		return cmd, timeout, tr
 	}
 	// wait for results
 	select {
 	case returnCmd := <-state.Cli.Channels:
-		com, _ := command.ConvertPayload(returnCmd.Payload)
-		//ctx.Println(com.Name, com.Status, com.ErrMsg)
-		if com.ErrMsg != "" {
-			m.Error(com.ErrMsg)
+		msgs.Debug("CMD", returnCmd)
+
+		cmd := command.ConvertPayload(returnCmd.Payload)
+
+		if cmd.ErrMsg != "" {
+			msgs.Error(cmd.ErrMsg)
 		} else {
-			for i, val := range com.ReturnValues {
+			for i, val := range cmd.ReturnValues {
 				if i == 0 {
-					m.Ok(val.(string))
+					msgs.Ok(val.(string))
 				} else {
-					m.Msg(val.(string))
+					msgs.Msg(val.(string))
 				}
 			}
 		}
@@ -61,18 +63,19 @@ func sendCommand(cmd *types.Cmd) *terr.Trace {
 	cmdp.From = cmd.From
 	cmdp.Status = cmd.Status
 	cmdp.ErrMsg = cmd.ErrMsg
+	cmdp.Service = cmd.Service
 	cmdp.ReturnValues = cmd.ReturnValues
 	payload, err := json.Marshal(cmdp)
 	if err != nil {
 		msg := "Unable to marshall json: " + err.Error()
 		err := errors.New(msg)
-		trace := terr.New("cmd.handler.sendCommand", err)
-		return trace
+		tr := terr.New("cmd.handler.sendCommand", err)
+		return tr
 	}
 	_, err = state.Cli.Http.Publish(state.Server.CmdChanIn, payload)
 	if err != nil {
-		trace := terr.New("cmd.handler.sendCommand", err)
-		return trace
+		tr := terr.New("cmd.handler.sendCommand", err)
+		return tr
 	}
 	return nil
 }

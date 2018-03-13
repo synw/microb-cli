@@ -2,9 +2,9 @@ package state
 
 import (
 	"errors"
-	"fmt"
 	"github.com/synw/centcom"
 	"github.com/synw/microb-cli/libmicrob/conf"
+	"github.com/synw/microb-cli/libmicrob/msgs"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
@@ -27,7 +27,7 @@ func Init(verbosity int) *terr.Trace {
 		for name, _ := range Servers {
 			msg = msg + name + " "
 		}
-		fmt.Println(msg)
+		msgs.Msg(msg)
 	}
 	return nil
 }
@@ -35,6 +35,7 @@ func Init(verbosity int) *terr.Trace {
 func InitServer() *terr.Trace {
 	cli := centcom.NewClient(Server.Addr, Server.Key)
 	err := centcom.Connect(cli)
+	//defer centcom.Disconnect(cli)
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)
 		return trace
