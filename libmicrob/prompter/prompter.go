@@ -32,8 +32,8 @@ func executor(in string) {
 		}
 		// execute locally and exit if the command has an Exec function
 		// this is used by the client for its local commands
-		run := cmd.Exec.(func(*types.Cmd) *types.Cmd)
-		if run != nil {
+		if cmd.Exec != nil {
+			run := cmd.Exec.(func(*types.Cmd) *types.Cmd)
 			cmd = run(cmd)
 			return
 		}

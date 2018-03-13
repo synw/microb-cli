@@ -7,7 +7,54 @@ import (
 	"github.com/synw/microb-cli/libmicrob/state"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
+	"time"
 )
+
+func New(name string, args ...map[string]interface{}) *types.Cmd {
+	date := time.Now()
+	var service string
+	var params []interface{}
+	var from string
+	var status string
+	var errMsg string
+	var trace *terr.Trace
+	var returnValues []interface{}
+	var exec interface{}
+	if len(args) == 1 {
+		for k, v := range args[0] {
+			if k == "service" {
+				service = v.(string)
+			} else if k == "params" {
+				params = v.([]interface{})
+			} else if k == "from" {
+				from = v.(string)
+			} else if k == "status" {
+				status = v.(string)
+			} else if k == "errMsg" {
+				errMsg = v.(string)
+			} else if k == "trace" {
+				trace = v.(*terr.Trace)
+			} else if k == "returnValues" {
+				returnValues = v.([]interface{})
+			} else if k == "exec" {
+				exec = v.(interface{})
+			}
+		}
+	}
+	cmd := &types.Cmd{
+		Name:         name,
+		Date:         date,
+		Service:      service,
+		Args:         params,
+		From:         from,
+		Status:       status,
+		ErrMsg:       errMsg,
+		Trace:        trace,
+		ReturnValues: returnValues,
+		Exec:         exec,
+	}
+	return cmd
+}
 
 func GetCmds() map[string]*types.Cmd {
 	cmds := make(map[string]*types.Cmd)
@@ -34,10 +81,30 @@ func Using() *types.Cmd {
 }
 
 func Ping() *types.Cmd {
+	args := make(map[string]interface{})
+	args["service"] = "infos"
+	cmd := New("ping", args)
+	return cmd
+}
+
+func Services() *types.Cmd {
 	cmd := &types.Cmd{
-		Name:    "ping",
+		Name:    "services",
 		Service: "infos",
-		Exec:    ping,
+		//Exec:    srv,
+	}
+	return cmd
+}
+
+func srv(cmd *types.Cmd) *types.Cmd {
+	cmd, timeout, tr := handler.SendCmd(cmd)
+	if tr != nil {
+		tr = terr.Pass("cmd.srv", tr)
+		tr.Print()
+		return cmd
+	}
+	if timeout == true {
+		msgs.Timeout("The server is not responding")
 	}
 	return cmd
 }
@@ -45,7 +112,7 @@ func Ping() *types.Cmd {
 func ping(cmd *types.Cmd) *types.Cmd {
 	cmd, timeout, tr := handler.SendCmd(cmd)
 	if tr != nil {
-		tr = terr.Pass("cmd.Ping", tr)
+		tr = terr.Pass("cmd.ping", tr)
 		tr.Print()
 		return cmd
 	}
