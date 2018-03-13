@@ -29,8 +29,23 @@ func Error(txt string) {
 	msg(txt, "error")
 }
 
+func State(txt string) {
+	msg(txt, "state")
+}
+
+func Status(txt string) {
+	msg(txt, "status")
+}
+
 func Bold(txt string) string {
 	return color.Bold(txt)
+}
+
+func Debug(obj ...interface{}) {
+	for i, el := range obj {
+		msg := "[" + color.BoldRed("Debug") + "]"
+		fmt.Println(msg, i, el)
+	}
 }
 
 func msg(txt string, class string) {
@@ -45,13 +60,10 @@ func msg(txt string, class string) {
 		mess = "[" + color.BoldRed("Error") + "] " + txt
 	} else if class == "timeout" {
 		mess = "[" + color.BoldRed("Timeout") + "] " + txt
+	} else if class == "state" {
+		mess = "[" + color.Yellow("State") + "] " + txt
+	} else if class == "status" {
+		mess = "[" + color.Blue("Status") + "] " + txt
 	}
 	fmt.Println(mess)
-}
-
-func Debug(obj ...interface{}) {
-	for i, el := range obj {
-		msg := "[" + color.BoldRed("Debug") + "]"
-		fmt.Println(msg, i, el)
-	}
 }

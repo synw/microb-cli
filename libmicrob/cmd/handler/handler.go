@@ -34,8 +34,6 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	// wait for results
 	select {
 	case returnCmd := <-state.Cli.Channels:
-		msgs.Debug("CMD", returnCmd)
-
 		cmd := command.ConvertPayload(returnCmd.Payload)
 
 		if cmd.ErrMsg != "" {

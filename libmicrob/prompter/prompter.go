@@ -26,6 +26,7 @@ func executor(in string) {
 		cmdargs = interfaceSlice
 	}
 	if cmd, ok := cmds[cmdname]; ok {
+		cmd.Status = "pending"
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs
 		}
