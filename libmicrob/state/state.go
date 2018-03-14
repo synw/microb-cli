@@ -36,7 +36,6 @@ func Init(verbosity int) *terr.Trace {
 func InitServer() *terr.Trace {
 	cli := centcom.NewClient(Server.Addr, Server.Key)
 	err := centcom.Connect(cli)
-	//defer centcom.Disconnect(cli)
 	if err != nil {
 		trace := terr.New("centcom.InitCli", err)
 		return trace

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/synw/microb-cli/libmicrob/msgs"
 	"github.com/synw/microb-cli/libmicrob/state"
-	command "github.com/synw/microb/libmicrob/cmd"
+	command "github.com/synw/microb/libmicrob/cmds"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"time"
@@ -35,14 +35,27 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	select {
 	case returnCmd := <-state.Cli.Channels:
 		cmd := command.ConvertPayload(returnCmd.Payload)
+		msgs.Debug("EX", cmd, cmd.ExecAfter)
+
 		if cmd.ErrMsg != "" {
 			msgs.Error(cmd.ErrMsg)
 		} else {
-			for i, val := range cmd.ReturnValues {
-				if i == 0 {
-					msgs.Ok(val.(string))
-				} else {
-					msgs.Msg(val.(string))
+			if cmd.ExecAfter != nil {
+				run := cmd.ExecAfter.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
+				cmd, tr = run(cmd)
+				if tr != nil {
+					err := errors.New("Can not execute processing function")
+					tr := terr.Add("cmd.handler.SendCmd", err, tr)
+					return cmd, false, tr
+				}
+				return cmd, false, nil
+			} else {
+				for i, val := range cmd.ReturnValues {
+					if i == 0 {
+						msgs.Ok(val.(string))
+					} else {
+						msgs.Msg(val.(string))
+					}
 				}
 			}
 		}

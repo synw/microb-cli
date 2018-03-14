@@ -32,9 +32,16 @@ func executor(in string) {
 		}
 		// execute locally and exit if the command has an Exec function
 		// this is used by the client for its local commands
-		if cmd.Exec != nil {
-			run := cmd.Exec.(func(*types.Cmd) *types.Cmd)
-			cmd = run(cmd)
+		if cmd.ExecCli != nil {
+			run := cmd.ExecCli.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
+			_, tr := run(cmd)
+			if tr != nil {
+				msg := "Can not execute local processing function for command " + in
+				err := errors.New(msg)
+				tr = terr.Add("executor", err, tr)
+				tr.Printc()
+				return
+			}
 			return
 		}
 		// otherwise send the command to the handler

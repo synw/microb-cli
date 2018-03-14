@@ -19,7 +19,8 @@ func New(name string, args ...map[string]interface{}) *types.Cmd {
 	var errMsg string
 	var trace *terr.Trace
 	var returnValues []interface{}
-	var exec interface{}
+	var execCli interface{}
+	var execAfter interface{}
 	if len(args) == 1 {
 		for k, v := range args[0] {
 			if k == "service" {
@@ -36,8 +37,10 @@ func New(name string, args ...map[string]interface{}) *types.Cmd {
 				trace = v.(*terr.Trace)
 			} else if k == "returnValues" {
 				returnValues = v.([]interface{})
-			} else if k == "exec" {
-				exec = v.(interface{})
+			} else if k == "execCli" {
+				execCli = v.(interface{})
+			} else if k == "execAfter" {
+				execAfter = v.(interface{})
 			}
 		}
 	}
@@ -51,8 +54,10 @@ func New(name string, args ...map[string]interface{}) *types.Cmd {
 		ErrMsg:       errMsg,
 		Trace:        trace,
 		ReturnValues: returnValues,
-		Exec:         exec,
+		ExecCli:      execCli,
+		ExecAfter:    execAfter,
 	}
+	msgs.Debug(cmd)
 	return cmd
 }
 
@@ -67,16 +72,16 @@ func GetCmds() map[string]*types.Cmd {
 
 func Use() *types.Cmd {
 	cmd := &types.Cmd{
-		Name: "use",
-		Exec: use,
+		Name:    "use",
+		ExecCli: use,
 	}
 	return cmd
 }
 
 func Using() *types.Cmd {
 	cmd := &types.Cmd{
-		Name: "using",
-		Exec: using,
+		Name:    "using",
+		ExecCli: using,
 	}
 	return cmd
 }
@@ -84,6 +89,7 @@ func Using() *types.Cmd {
 func Ping() *types.Cmd {
 	args := make(map[string]interface{})
 	args["service"] = "infos"
+	args["execAfter"] = afterPing
 	cmd := New("ping", args)
 	return cmd
 }
@@ -121,45 +127,49 @@ func ping(cmd *types.Cmd) *types.Cmd {
 	return cmd
 }
 
-func using(cmd *types.Cmd) *types.Cmd {
+func afterPing(cmd *types.Cmd) (*types.Cmd, *terr.Trace) {
+	msgs.Debug(cmd.ReturnValues)
+	return cmd, nil
+}
+
+func using(cmd *types.Cmd) (*types.Cmd, *terr.Trace) {
 	if state.Server == nil {
 		msgs.Warning("No server selected: try the use command: ex: " + msgs.Bold("use") + " server1")
 	} else {
 		msgs.Msg("Using server " + msgs.Bold(state.Server.Name))
 	}
-	return cmd
+	return cmd, nil
 }
 
-func use(cmd *types.Cmd) *types.Cmd {
+func use(cmd *types.Cmd) (*types.Cmd, *terr.Trace) {
 	if len(cmd.Args) != 1 {
 		msgs.Warning("Please provide a server name: ex: use localhost")
-		return cmd
+		err := errors.New("Can not find server")
+		tr := terr.New("cmd.use", err)
+		return cmd, tr
 	}
 	server := cmd.Args[0].(string)
 	tr := serverExists(server)
 	if tr != nil {
 		tr = terr.Pass("comd.state.Use", tr)
-		tr.Printc()
-		return cmd
+		return cmd, tr
 	}
 	state.Server = state.Servers[server]
 	tr = state.InitServer()
 	if tr != nil {
 		tr = terr.Pass("comd.state.Use", tr)
-		tr.Printc()
-		return cmd
+		return cmd, tr
 	}
 	// init cli and check server
 	if tr != nil {
 		err := errors.New("can not connect to websockets server: check your config")
 		tr := terr.Add("cmd.state.Use", err, tr)
-		tr.Printc()
-		return cmd
+		return cmd, tr
 	} else {
 		msg := "Connnected to server " + server
 		msgs.Ready(msg)
 	}
-	return cmd
+	return cmd, nil
 }
 
 func serverExists(server_name string) *terr.Trace {

@@ -4,12 +4,15 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/synw/microb-cli/libmicrob/cmd"
 	"github.com/synw/microb-cli/libmicrob/prompter"
 	"github.com/synw/microb-cli/libmicrob/state"
+	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
 var verbosity = flag.Int("v", 1, "Verbosity")
+var server = flag.String("s", "__unset__", "Use server")
 
 func main() {
 	flag.Parse()
@@ -26,6 +29,16 @@ func main() {
 	srvs := "Available servers:"
 	for name, _ := range state.Servers {
 		srvs = srvs + " " + name
+	}
+	if *server != "__unset__" {
+		com := cmd.Use()
+		var args []interface{}
+		args = append(args, *server)
+		com.Args = args
+		_, tr := com.ExecCli.(func(*types.Cmd) (*types.Cmd, *terr.Trace))(com)
+		if tr != nil {
+			tr.Formatc()
+		}
 	}
 	fmt.Println(srvs)
 	prompter.Prompt()
