@@ -10,5 +10,6 @@
 		"centrifugo_addr":"localhost:8001",
 		"centrifugo_key":"secret_key"
 		}
-	]
+	],
+	"services":["infos"]
 }

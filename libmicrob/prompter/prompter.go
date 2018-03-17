@@ -3,14 +3,14 @@ package prompter
 import (
 	"errors"
 	"github.com/c-bata/go-prompt"
-	"github.com/synw/microb-cli/libmicrob/cmd"
+	commands "github.com/synw/microb-cli/libmicrob/cmd"
 	"github.com/synw/microb-cli/libmicrob/cmd/handler"
+	//"github.com/synw/microb-cli/libmicrob/msgs"
+	"github.com/synw/microb-cli/libmicrob/state"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"strings"
 )
-
-var cmds = cmd.GetCmds()
 
 func executor(in string) {
 	args := strings.Split(in, " ")
@@ -25,7 +25,9 @@ func executor(in string) {
 		}
 		cmdargs = interfaceSlice
 	}
-	if cmd, ok := cmds[cmdname]; ok {
+	cmd := commands.New(cmdname)
+	if commands.IsValid(cmd) == true {
+		cmd := state.Cmds[cmdname]
 		cmd.Status = "pending"
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs

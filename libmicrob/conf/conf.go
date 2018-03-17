@@ -13,21 +13,22 @@ func getComChan(name string) (string, string) {
 	return comchan_in, comchan_out
 }
 
-func GetServers() (map[string]*types.WsServer, *terr.Trace) {
+func Get() (map[string]*types.WsServer, []string, *terr.Trace) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("~/.microb-cli")
 	err := viper.ReadInConfig()
 	servers := make(map[string]*types.WsServer)
+	var srvs []string
 	if err != nil {
 		switch err.(type) {
 		case viper.ConfigParseError:
 			trace := terr.New("getServers", err)
-			return servers, trace
+			return servers, srvs, trace
 		default:
 			err := errors.New("Unable to locate config file")
 			trace := terr.New("getServers", err)
-			return servers, trace
+			return servers, srvs, trace
 		}
 	}
 	available_servers := viper.Get("servers").([]interface{})
@@ -39,5 +40,9 @@ func GetServers() (map[string]*types.WsServer, *terr.Trace) {
 		comchan_in, comchan_out := getComChan(name)
 		servers[name] = &types.WsServer{name, wsaddr, wskey, comchan_in, comchan_out}
 	}
-	return servers, nil
+	snames := viper.Get("services").([]interface{})
+	for _, srv := range snames {
+		srvs = append(srvs, srv.(string))
+	}
+	return servers, srvs, nil
 }

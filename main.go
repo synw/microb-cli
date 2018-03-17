@@ -3,29 +3,26 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/synw/microb-cli/libmicrob/cmd"
+	"github.com/synw/microb-cli/libmicrob/msgs"
 	"github.com/synw/microb-cli/libmicrob/prompter"
 	"github.com/synw/microb-cli/libmicrob/state"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
-var verbosity = flag.Int("v", 1, "Verbosity")
-var server = flag.String("s", "__unset__", "Use server")
+var server = flag.String("u", "__unset__", "Use server")
 
 func main() {
 	flag.Parse()
 	// read conf
-	trace := state.Init(*verbosity)
-	if trace != nil {
+	tr := state.Init()
+	if tr != nil {
 		err := errors.New("Unable to init state")
-		trace := terr.Add("main", err, trace)
-		terr.Fatal("main", trace)
+		tr := terr.Add("main", err, tr)
+		terr.Fatal("main", tr)
 	}
-	if state.Verbosity > 2 {
-		terr.Ok("State initialized")
-	}
+	msgs.Ok("State initialized")
 	srvs := "Available servers:"
 	for name, _ := range state.Servers {
 		srvs = srvs + " " + name
@@ -40,6 +37,6 @@ func main() {
 			tr.Formatc()
 		}
 	}
-	fmt.Println(srvs)
+	msgs.Msg(srvs)
 	prompter.Prompt()
 }
