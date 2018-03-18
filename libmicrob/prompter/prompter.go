@@ -28,8 +28,6 @@ func executor(in string) {
 		cmdargs = interfaceSlice
 	}
 	cmd := cmds.New(cmdname)
-	msgs.Debug(state.Cmds)
-
 	if cmds.IsValid(cmd, state) == true {
 		cmd := state.Cmds[cmdname]
 		cmd.Status = "pending"
@@ -56,7 +54,7 @@ func executor(in string) {
 			msg := "Can not execute command " + in
 			err := errors.New(msg)
 			tr := terr.Add("executor", err, tr)
-			tr.Printc()
+			msgs.Error(msg + "\n" + tr.Formatc())
 			return
 		}
 		if timeout == true {
@@ -69,9 +67,7 @@ func executor(in string) {
 		terr.Debug(rescmd)
 	} else {
 		msg := "Command " + in + " not found"
-		err := errors.New(msg)
-		tr := terr.New("executor", err)
-		tr.Printc()
+		msgs.Error(msg)
 	}
 }
 
