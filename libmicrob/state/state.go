@@ -3,65 +3,67 @@ package state
 import (
 	"errors"
 	"github.com/synw/centcom"
+	"github.com/synw/microb-cli/libmicrob/cmds"
 	"github.com/synw/microb-cli/libmicrob/conf"
 	"github.com/synw/microb-cli/libmicrob/msgs"
+	cliTypes "github.com/synw/microb-cli/libmicrob/types"
 	"github.com/synw/microb-cli/services"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
-var Servers map[string]*types.WsServer
-var Server *types.WsServer = nil
-var Cli *centcom.Cli
-var Services map[string]*types.Service
-var Cmds map[string]*types.Cmd
+var State *cliTypes.State = &cliTypes.State{}
 
-func Init() *terr.Trace {
+func Init() (*cliTypes.State, *terr.Trace) {
 	// get servers
-	servers, srvNames, tr := conf.Get()
+	var srvNames []string
+	var tr *terr.Trace
+	State.WsServers, srvNames, tr = conf.Get()
+	State.InitServer = initServer
 	if tr != nil {
-		tr := terr.Pass("state.Init", tr)
-		return tr
+		tr := terr.Pass("State.Init", tr)
+		return State, tr
 	}
-	Servers = servers
 	// get services
-	Services, tr = services.Get(srvNames)
+	State.Services, tr = services.Get(srvNames)
 	if tr != nil {
-		tr := terr.Pass("state.Init", tr)
-		return tr
+		tr := terr.Pass("State.Init", tr)
+		return State, tr
 	}
-	Cmds = make(map[string]*types.Cmd)
+	State.Cmds = make(map[string]*types.Cmd)
+	State.Cmds["using"] = cmds.Using()
+	State.Cmds["use"] = cmds.Use()
 	// get all commands
-	for _, srv := range Services {
+	for _, srv := range State.Services {
 		for cname, cmd := range srv.Cmds {
-			Cmds[cname] = cmd
+			State.Cmds[cname] = cmd
 		}
 	}
-	return nil
+	return State, nil
 }
 
-func InitServer() *terr.Trace {
-	cli := centcom.NewClient(Server.Addr, Server.Key)
+func initServer() *terr.Trace {
+	cli := centcom.NewClient(State.WsServer.Addr, State.WsServer.Key)
 	err := centcom.Connect(cli)
 	if err != nil {
-		tr := terr.New("state.InitServer", err)
+		tr := terr.New("State.InitServer", err)
 		return tr
 	}
 	cli.IsConnected = true
-	msg := "Client connected: using command channel " + Server.CmdChanIn
+	msg := "Client connected: using command channel " + State.WsServer.CmdChanIn
 	msgs.Ok(msg)
 	err = cli.CheckHttp()
 	if err != nil {
-		tr := terr.New("state.InitServer", err)
+		tr := terr.New("State.InitServer", err)
 		return tr
 	}
 	msgs.Ok("Http transport ready")
-	Cli = cli
-	err = Cli.Subscribe(Server.CmdChanOut)
+	err = cli.Subscribe(State.WsServer.CmdChanOut)
 	if err != nil {
 		err := errors.New(err.Error())
-		tr := terr.New("state.InitServer", err)
+		tr := terr.New("State.InitServer", err)
 		return tr
 	}
+	State.Cli = cli
 	return nil
 }

@@ -44,5 +44,6 @@ func Get() (map[string]*types.WsServer, []string, *terr.Trace) {
 	for _, srv := range snames {
 		srvs = append(srvs, srv.(string))
 	}
+
 	return servers, srvs, nil
 }

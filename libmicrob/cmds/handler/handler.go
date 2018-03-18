@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/synw/microb-cli/libmicrob/msgs"
-	"github.com/synw/microb-cli/libmicrob/state"
-	command "github.com/synw/microb/libmicrob/cmds"
+	cliTypes "github.com/synw/microb-cli/libmicrob/types"
+	"github.com/synw/microb/libmicrob/cmds"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"time"
 )
 
-func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
+func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Trace) {
 	timeout := false
 	// check if server is set
-	if state.Server == nil {
+	if state.WsServer == nil {
 		err := errors.New("No server selected. Set it with: use server_name")
 		tr := terr.New("cmd.handler.SendCmd", err)
 		return cmd, timeout, tr
@@ -25,8 +25,8 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 		tr := terr.New("cmd.handler.SendCmd", err)
 		return cmd, timeout, tr
 	}
-	// send the command
-	tr := sendCommand(cmd)
+	// send the cmds
+	tr := sendCommand(cmd, state)
 	if tr != nil {
 		tr := terr.Pass("cmd.handler.SendCmd", tr)
 		return cmd, timeout, tr
@@ -34,9 +34,7 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	// wait for results
 	select {
 	case returnCmd := <-state.Cli.Channels:
-		cmd := command.ConvertPayload(returnCmd.Payload)
-		msgs.Debug("EX", cmd, cmd.ExecAfter)
-
+		cmd := cmds.ConvertPayload(returnCmd.Payload)
 		if cmd.ErrMsg != "" {
 			msgs.Error(cmd.ErrMsg)
 		} else {
@@ -65,7 +63,7 @@ func SendCmd(cmd *types.Cmd) (*types.Cmd, bool, *terr.Trace) {
 	return cmd, false, nil
 }
 
-func sendCommand(cmd *types.Cmd) *terr.Trace {
+func sendCommand(cmd *types.Cmd, state *cliTypes.State) *terr.Trace {
 	var cmdp types.Cmd
 	cmdp.Name = cmd.Name
 	cmdp.Date = cmd.Date
@@ -82,7 +80,7 @@ func sendCommand(cmd *types.Cmd) *terr.Trace {
 		tr := terr.New("cmd.handler.sendCommand", err)
 		return tr
 	}
-	_, err = state.Cli.Http.Publish(state.Server.CmdChanIn, payload)
+	_, err = state.Cli.Http.Publish(state.WsServer.CmdChanIn, payload)
 	if err != nil {
 		tr := terr.New("cmd.handler.sendCommand", err)
 		return tr

@@ -3,16 +3,18 @@ package prompter
 import (
 	"errors"
 	"github.com/c-bata/go-prompt"
-	commands "github.com/synw/microb-cli/libmicrob/cmd"
-	"github.com/synw/microb-cli/libmicrob/cmd/handler"
-	//"github.com/synw/microb-cli/libmicrob/msgs"
-	"github.com/synw/microb-cli/libmicrob/state"
+	"github.com/synw/microb-cli/libmicrob/cmds"
+	"github.com/synw/microb-cli/libmicrob/cmds/handler"
+	"github.com/synw/microb-cli/libmicrob/msgs"
+	st "github.com/synw/microb-cli/libmicrob/state"
+	cliTypes "github.com/synw/microb-cli/libmicrob/types"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"strings"
 )
 
 func executor(in string) {
+	state := st.State
 	args := strings.Split(in, " ")
 	cmdname := args[0]
 	args = args[1:]
@@ -25,18 +27,20 @@ func executor(in string) {
 		}
 		cmdargs = interfaceSlice
 	}
-	cmd := commands.New(cmdname)
-	if commands.IsValid(cmd) == true {
+	cmd := cmds.New(cmdname)
+	msgs.Debug(state.Cmds)
+
+	if cmds.IsValid(cmd, state) == true {
 		cmd := state.Cmds[cmdname]
 		cmd.Status = "pending"
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs
 		}
 		// execute locally and exit if the command has an Exec function
-		// this is used by the client for its local commands
+		// this is used by the client for its local cmds
 		if cmd.ExecCli != nil {
-			run := cmd.ExecCli.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
-			_, tr := run(cmd)
+			run := cmd.ExecCli.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))
+			_, tr := run(cmd, state)
 			if tr != nil {
 				msg := "Can not execute local processing function for command " + in
 				err := errors.New(msg)
@@ -47,7 +51,7 @@ func executor(in string) {
 			return
 		}
 		// otherwise send the command to the handler
-		rescmd, timeout, tr := handler.SendCmd(cmd)
+		rescmd, timeout, tr := handler.SendCmd(cmd, state)
 		if tr != nil {
 			msg := "Can not execute command " + in
 			err := errors.New(msg)

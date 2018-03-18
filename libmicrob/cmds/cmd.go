@@ -1,9 +1,7 @@
-package cmd
+package cmds
 
 import (
-	"errors"
-	//"github.com/synw/microb-cli/libmicrob/msgs"
-	"github.com/synw/microb-cli/libmicrob/state"
+	cliTypes "github.com/synw/microb-cli/libmicrob/types"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"time"
@@ -63,32 +61,11 @@ func New(name string, args ...map[string]interface{}) *types.Cmd {
 	return cmd
 }
 
-/*func GetCmds() map[string]*types.Cmd {
-	cmds := make(map[string]*types.Cmd)
-	cmds["use"] = Use()
-	cmds["using"] = Using()
-	cmds["ping"] = Ping()
-	cmds["services"] = Services()
-	return cmds
-}*/
-
-func IsValid(cmd *types.Cmd) bool {
+func IsValid(cmd *types.Cmd, state *cliTypes.State) bool {
 	for _, scmd := range state.Cmds {
 		if cmd.Name == scmd.Name {
 			return true
 		}
 	}
 	return false
-}
-
-func serverExists(server_name string) *terr.Trace {
-	for name, _ := range state.Servers {
-		if server_name == name {
-			return nil
-		}
-	}
-	msg := "Server " + server_name + " not found: please check your config file"
-	err := errors.New(msg)
-	tr := terr.New("ws.serverExists", err)
-	return tr
 }

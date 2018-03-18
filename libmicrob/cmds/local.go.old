@@ -1,4 +1,4 @@
-package cmd
+package cmds
 
 import (
 	"errors"
@@ -28,7 +28,6 @@ func Using() *types.Cmd {
 func Ping() *types.Cmd {
 	args := make(map[string]interface{})
 	args["service"] = "infos"
-	args["execAfter"] = afterPing
 	cmd := New("ping", args)
 	return cmd
 }
@@ -64,11 +63,6 @@ func ping(cmd *types.Cmd) *types.Cmd {
 		msgs.Timeout("The server is not responding")
 	}
 	return cmd
-}
-
-func afterPing(cmd *types.Cmd) (*types.Cmd, *terr.Trace) {
-	msgs.Debug(cmd.ReturnValues)
-	return cmd, nil
 }
 
 func using(cmd *types.Cmd) (*types.Cmd, *terr.Trace) {
