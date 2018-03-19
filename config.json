@@ -11,5 +11,5 @@
 		"centrifugo_key":"secret_key"
 		}
 	],
-	"services":["infos"]
+	"services":["infos", "http"]
 }
