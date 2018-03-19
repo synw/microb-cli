@@ -57,6 +57,17 @@ func executor(in string) {
 			msgs.Error(msg + "\n" + tr.Formatc())
 			return
 		}
+		// execute callback
+		if rescmd.ExecAfter != nil {
+			_, tr = rescmd.ExecAfter.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))(rescmd, state)
+			if tr != nil {
+				msg := "Can not execute callback for command " + in
+				err := errors.New(msg)
+				tr := terr.Add("executor", err, tr)
+				msgs.Error(msg + "\n" + tr.Formatc())
+				return
+			}
+		}
 		if timeout == true {
 			msg := "Timeout: the server does not respond. Can not execute command"
 			err := errors.New(msg)
@@ -64,7 +75,6 @@ func executor(in string) {
 			tr.Printc()
 			return
 		}
-		terr.Debug(rescmd)
 	} else {
 		msg := "Command " + in + " not found"
 		msgs.Error(msg)
