@@ -8,16 +8,49 @@ import (
 	"github.com/synw/microb-cli/libmicrob/msgs"
 	st "github.com/synw/microb-cli/libmicrob/state"
 	cliTypes "github.com/synw/microb-cli/libmicrob/types"
+	"github.com/synw/microb-cli/services"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"strings"
 )
 
+func switchService(sname string) bool {
+	srv, exists := services.Get(sname, st.State)
+	if exists == false {
+		msgs.Error("Service " + sname + " not found")
+		return false
+	}
+	st.State.CurrentService = srv
+	return true
+}
+
 func executor(in string) {
 	state := st.State
+
+	/*for _, srv := range state.Services {
+		for cname, cmd := range srv.Cmds {
+			msgs.Debug(cname, cmd.Service)
+		}
+	}*/
+
 	args := strings.Split(in, " ")
 	cmdname := args[0]
 	args = args[1:]
+
+	if cmdname == "set" {
+		exists := switchService(args[0])
+		if exists == false {
+			return
+		}
+		msgs.Ok("Switched to service " + args[0])
+		return
+	} else if cmdname == "unset" {
+		var srv *types.Service
+		state.CurrentService = srv
+		msgs.Ok("Service unset")
+		return
+	}
+
 	// get cmd args and encode them to an interface
 	var cmdargs []interface{}
 	if len(args) > 0 {
@@ -27,9 +60,9 @@ func executor(in string) {
 		}
 		cmdargs = interfaceSlice
 	}
-	cmd := cmds.New(cmdname)
-	if cmds.IsValid(cmd, state) == true {
-		cmd := state.Cmds[cmdname]
+	//cmd := cmds.New(cmdname)
+	cmd, isValid := cmds.GetCmd(cmdname, cmdargs, state)
+	if isValid == true {
 		cmd.Status = "pending"
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs

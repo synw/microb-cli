@@ -7,11 +7,11 @@ import (
 )
 
 type State struct {
-	WsServers  map[string]*types.WsServer
-	WsServer   *types.WsServer
-	Cli        *centcom.Cli
-	Services   map[string]*types.Service
-	Cmds       map[string]*types.Cmd
-	Conf       *types.Conf
-	InitServer func() *terr.Trace
+	WsServers      map[string]*types.WsServer
+	WsServer       *types.WsServer
+	Cli            *centcom.Cli
+	Services       map[string]*types.Service
+	Conf           *types.Conf
+	InitServer     func() *terr.Trace
+	CurrentService *types.Service
 }

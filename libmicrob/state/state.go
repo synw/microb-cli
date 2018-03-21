@@ -8,7 +8,7 @@ import (
 	"github.com/synw/microb-cli/libmicrob/msgs"
 	cliTypes "github.com/synw/microb-cli/libmicrob/types"
 	"github.com/synw/microb-cli/services"
-	"github.com/synw/microb/libmicrob/types"
+	//"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 )
 
@@ -25,20 +25,22 @@ func Init() (*cliTypes.State, *terr.Trace) {
 		return State, tr
 	}
 	// get services
-	State.Services, tr = services.Get(srvNames)
+	State.Services, tr = services.GetAll(srvNames)
 	if tr != nil {
 		tr := terr.Pass("State.Init", tr)
 		return State, tr
 	}
-	State.Cmds = make(map[string]*types.Cmd)
-	State.Cmds["using"] = cmds.Using()
-	State.Cmds["use"] = cmds.Use()
+	cmds.EnsureCmdsHaveService(State)
+
+	//State.Cmds = make(map[string]*types.Cmd)
+	//State.Cmds["using"] = cmds.Using()
+	//State.Cmds["use"] = cmds.Use()
 	// get all commands
-	for _, srv := range State.Services {
+	/*for _, srv := range State.Services {
 		for cname, cmd := range srv.Cmds {
 			State.Cmds[cname] = cmd
 		}
-	}
+	}*/
 	return State, nil
 }
 
