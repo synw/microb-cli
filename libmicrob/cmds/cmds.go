@@ -85,6 +85,7 @@ func GetCmd(cmdName string, cmdArgs []interface{}, state *cliTypes.State) (*type
 				return rcmd, false
 			}
 			cmdSrv = state.CurrentService
+			msgs.Msg("Using current service " + cmdSrv.Name)
 		}
 	}
 	for cname, cmd := range cmdSrv.Cmds {

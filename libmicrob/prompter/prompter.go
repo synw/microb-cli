@@ -103,9 +103,7 @@ func executor(in string) {
 		}
 		if timeout == true {
 			msg := "Timeout: the server does not respond. Can not execute command"
-			err := errors.New(msg)
-			tr := terr.New("executor", err)
-			tr.Printc()
+			msgs.Timeout(msg)
 			return
 		}
 	} else {
