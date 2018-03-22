@@ -15,6 +15,9 @@ import (
 )
 
 func switchService(sname string) bool {
+	/*
+		Switch to a service to use in the shell
+	*/
 	srv, exists := services.Get(sname, st.State)
 	if exists == false {
 		msgs.Error("Service " + sname + " not found")
@@ -25,14 +28,10 @@ func switchService(sname string) bool {
 }
 
 func executor(in string) {
+	/*
+		Execute a command from user input
+	*/
 	state := st.State
-
-	/*for _, srv := range state.Services {
-		for cname, cmd := range srv.Cmds {
-			msgs.Debug(cname, cmd.Service)
-		}
-	}*/
-
 	args := strings.Split(in, " ")
 	cmdname := args[0]
 	args = args[1:]
@@ -60,7 +59,6 @@ func executor(in string) {
 		}
 		cmdargs = interfaceSlice
 	}
-	//cmd := cmds.New(cmdname)
 	cmd, isValid := cmds.GetCmd(cmdname, cmdargs, state)
 	if isValid == true {
 		cmd.Status = "pending"
@@ -84,13 +82,12 @@ func executor(in string) {
 		// otherwise send the command to the handler
 		rescmd, timeout, tr := handler.SendCmd(cmd, state)
 		if tr != nil {
-			msg := "Can not execute command " + in
-			err := errors.New(msg)
-			tr := terr.Add("executor", err, tr)
-			msgs.Error(msg + "\n" + tr.Formatc())
+			/*msg := "Can not execute command " + in
+			tr := terr.Pass("prompter.executor", tr)
+			msgs.Error(msg + "\n" + tr.Formatc())*/
 			return
 		}
-		// execute callback
+		// execute eventual callback
 		if rescmd.ExecAfter != nil {
 			_, tr = rescmd.ExecAfter.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))(rescmd, state)
 			if tr != nil {
@@ -113,11 +110,17 @@ func executor(in string) {
 }
 
 func completer(in prompt.Document) []prompt.Suggest {
+	/*
+		Prompter completer: is disabled for now
+	*/
 	s := []prompt.Suggest{}
 	return prompt.FilterHasPrefix(s, in.GetWordBeforeCursor(), true)
 }
 
 func Prompt() {
+	/*
+		Main prompter function
+	*/
 	p := prompt.New(
 		executor,
 		completer,

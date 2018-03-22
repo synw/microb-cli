@@ -35,8 +35,9 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 	select {
 	case returnCmd := <-state.Cli.Channels:
 		cmd := cmds.ConvertPayload(returnCmd.Payload)
-		if cmd.ErrMsg != "" {
+		if cmd.Status != "success" {
 			msgs.Error(cmd.ErrMsg)
+			return cmd, false, cmd.Trace
 		} else {
 			if cmd.ExecAfter != nil {
 				run := cmd.ExecAfter.(func(*types.Cmd) (*types.Cmd, *terr.Trace))

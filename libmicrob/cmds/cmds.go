@@ -68,8 +68,6 @@ func GetCmd(cmdName string, cmdArgs []interface{}, state *cliTypes.State) (*type
 	*/
 	var cmdSrv *types.Service
 	for sname, srv := range state.Services {
-		//msgs.Debug("CMD "+cmdName, "SRV "+sname)
-
 		// check if the first argument is a service name
 		if cmdName == sname {
 			cmdName = cmdArgs[0].(string)
@@ -78,15 +76,15 @@ func GetCmd(cmdName string, cmdArgs []interface{}, state *cliTypes.State) (*type
 			}
 			cmdSrv = srv
 			break
-		} else {
-			if state.CurrentService == nil {
-				msgs.Error("No current service set, please set a service: ex: set infos")
-				var rcmd *types.Cmd
-				return rcmd, false
-			}
-			cmdSrv = state.CurrentService
-			msgs.Msg("Using current service " + cmdSrv.Name)
 		}
+	}
+	if cmdSrv == nil {
+		if state.CurrentService == nil {
+			msgs.Error("No current service set, please set a service: ex: set infos")
+			var rcmd *types.Cmd
+			return rcmd, false
+		}
+		cmdSrv = state.CurrentService
 	}
 	for cname, cmd := range cmdSrv.Cmds {
 		if cmdName == cname {
