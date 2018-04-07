@@ -35,7 +35,10 @@ func executor(in string) {
 	args := strings.Split(in, " ")
 	cmdname := args[0]
 	args = args[1:]
-
+	var cmd *types.Cmd
+	var isValid bool
+	isLocal := false
+	// check for local cli cmds
 	if cmdname == "set" {
 		exists := switchService(args[0])
 		if exists == false {
@@ -48,8 +51,10 @@ func executor(in string) {
 		state.CurrentService = srv
 		msgs.Ok("Service unset")
 		return
+	} else if cmdname == "use" {
+		cmd = cmds.Use()
+		isLocal = true
 	}
-
 	// get cmd args and encode them to an interface
 	var cmdargs []interface{}
 	if len(args) > 0 {
@@ -59,7 +64,11 @@ func executor(in string) {
 		}
 		cmdargs = interfaceSlice
 	}
-	cmd, isValid := cmds.GetCmd(cmdname, cmdargs, state)
+	if isLocal == false {
+		cmd, isValid = cmds.GetCmd(cmdname, cmdargs, state)
+	} else {
+		isValid = true
+	}
 	if isValid == true {
 		cmd.Status = "pending"
 		if len(cmdargs) > 0 {

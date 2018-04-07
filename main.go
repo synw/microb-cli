@@ -28,6 +28,7 @@ func main() {
 	for name, _ := range state.WsServers {
 		srvs = srvs + " " + name
 	}
+	// set the server to use if requested
 	if *server != "__unset__" {
 		cmd := cmds.Use()
 		var args []interface{}
