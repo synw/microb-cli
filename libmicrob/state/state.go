@@ -21,7 +21,9 @@ func Init() (*cliTypes.State, *terr.Trace) {
 	State.WsServers, srvNames, tr = conf.Get()
 	State.InitServer = initServer
 	if tr != nil {
-		tr := terr.Pass("State.Init", tr)
+		err := errors.New("Can not initialize websockets server")
+		tr = terr.Push("State.Init", err, tr)
+		terr.Fatal("State.Init", tr)
 		return State, tr
 	}
 	// get services
@@ -31,16 +33,6 @@ func Init() (*cliTypes.State, *terr.Trace) {
 		return State, tr
 	}
 	cmds.EnsureCmdsHaveService(State)
-
-	//State.Cmds = make(map[string]*types.Cmd)
-	//State.Cmds["using"] = cmds.Using()
-	//State.Cmds["use"] = cmds.Use()
-	// get all commands
-	/*for _, srv := range State.Services {
-		for cname, cmd := range srv.Cmds {
-			State.Cmds[cname] = cmd
-		}
-	}*/
 	return State, nil
 }
 

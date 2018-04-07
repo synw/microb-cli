@@ -3,6 +3,7 @@ package cmds
 import (
 	"errors"
 	cliTypes "github.com/synw/microb-cli/libmicrob/types"
+	"github.com/synw/microb/libmicrob/events"
 	"github.com/synw/microb/libmicrob/msgs"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
@@ -41,6 +42,7 @@ func runUse(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, *terr.Trace) {
 		return cmd, tr
 	}
 	server := cmd.Args[0].(string)
+	msgs.Status("Connecting to server " + server + " ...")
 	tr := serverExists(server, state)
 	if tr != nil {
 		tr = terr.Pass("comd.state.Use", tr)
@@ -48,14 +50,11 @@ func runUse(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, *terr.Trace) {
 	}
 	state.WsServer = state.WsServers[server]
 	tr = state.InitServer()
-	if tr != nil {
-		tr = terr.Pass("comd.state.Use", tr)
-		return cmd, tr
-	}
 	// init cli and check server
 	if tr != nil {
 		err := errors.New("can not connect to websockets server: check your config")
 		tr := terr.Add("cmd.state.Use", err, tr)
+		events.Error("microb", "Can not connect to websockets server", tr)
 		return cmd, tr
 	} else {
 		msg := "Connnected to server " + server
