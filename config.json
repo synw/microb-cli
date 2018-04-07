@@ -6,10 +6,15 @@
 		"centrifugo_key":"secret_key"
 		},
 		{
-		"name": "lo",
+		"name": "picasso",
 		"centrifugo_addr":"localhost:8001",
 		"centrifugo_key":"secret_key"
-		}
+		},
+		{
+        "name": "wrong",
+        "centrifugo_addr":"wrong:8001",
+        "centrifugo_key":"secret_key"
+        }
 	],
-	"services":["infos", "http"]
+	"services":["infos", "http", "mail"]
 }
