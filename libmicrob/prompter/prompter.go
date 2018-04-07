@@ -54,6 +54,9 @@ func executor(in string) {
 	} else if cmdname == "use" {
 		cmd = cmds.Use()
 		isLocal = true
+	} else if cmdname == "using" {
+		cmd = cmds.Using()
+		isLocal = true
 	}
 	// get cmd args and encode them to an interface
 	var cmdargs []interface{}
