@@ -12,6 +12,7 @@ import (
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"strings"
+	"time"
 )
 
 func switchService(sname string) bool {
@@ -74,6 +75,7 @@ func executor(in string) {
 	}
 	if isValid == true {
 		cmd.Status = "pending"
+		cmd.Date = time.Now()
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs
 		}
