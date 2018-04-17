@@ -79,7 +79,7 @@ func executor(in string) {
 		if len(cmdargs) > 0 {
 			cmd.Args = cmdargs
 		}
-		// execute locally and exit if the command has an Exec function
+		// execute locally and exit if the command has an ExecCli function
 		// this is used by the client for its local cmds
 		if cmd.ExecCli != nil {
 			run := cmd.ExecCli.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))
