@@ -14,4 +14,5 @@ type State struct {
 	Conf           *types.Conf
 	InitServer     func() *terr.Trace
 	CurrentService *types.Service
+	CmdIds         []string
 }

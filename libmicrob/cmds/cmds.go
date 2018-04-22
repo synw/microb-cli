@@ -32,6 +32,7 @@ func GetCmd(cmdName string, cmdArgs []interface{}, state *cliTypes.State) (*type
 	}
 	for cname, cmd := range cmdSrv.Cmds {
 		if cmdName == cname {
+			// fill the command
 			cmd.Args = cmdArgs
 			cmd.From = "cli"
 			return cmd, true
