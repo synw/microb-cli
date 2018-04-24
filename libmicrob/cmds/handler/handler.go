@@ -8,6 +8,7 @@ import (
 	"github.com/synw/microb-cli/libmicrob/msgs"
 	cliTypes "github.com/synw/microb-cli/libmicrob/types"
 	"github.com/synw/microb/libmicrob/cmds"
+	dec "github.com/synw/microb/libmicrob/msgs"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
 	"time"
@@ -54,29 +55,39 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 			//tr := terr.New("cmds.handler.SendCmd", err)
 			return cmd, false, nil
 		}
+		if tr != nil {
+			tr = terr.Pass("cmds.handlers.handler.SendCmd", tr)
+			return cmd, false, tr
+		}
 		// process the command
 		if cmd.Status != "success" {
 			msgs.Error(cmd.ErrMsg)
 			return cmd, false, cmd.Trace
+		}
+		if cmd.ExecAfter != nil {
+			run := cmd.ExecAfter.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
+			cmd, tr = run(cmd)
+			if tr != nil {
+				err := errors.New("Can not execute processing function")
+				tr := terr.Add("cmd.handler.SendCmd", err, tr)
+				return cmd, false, tr
+			}
+			return cmd, false, nil
 		} else {
-			if cmd.ExecAfter != nil {
-				run := cmd.ExecAfter.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
-				cmd, tr = run(cmd)
+			for i, val := range cmd.ReturnValues {
+				str, tr := dec.Decode(val.(string), "terminal")
 				if tr != nil {
-					err := errors.New("Can not execute processing function")
+					err := errors.New("Can not decode message")
 					tr := terr.Add("cmd.handler.SendCmd", err, tr)
 					return cmd, false, tr
 				}
-				return cmd, false, nil
-			} else {
-				for i, val := range cmd.ReturnValues {
-					if i == 0 {
-						msgs.Ok(val.(string))
-					} else {
-						msgs.Msg(val.(string))
-					}
+				if i == 0 {
+					msgs.Ok(str)
+				} else {
+					msgs.Msg(str)
 				}
 			}
+
 		}
 	case <-time.After(10 * time.Second):
 		newCmds, _ := updateCmdIds(cmd, state)
