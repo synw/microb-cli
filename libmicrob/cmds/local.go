@@ -37,15 +37,14 @@ func runUsing(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, *terr.Trace) {
 func runUse(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, *terr.Trace) {
 	if len(cmd.Args) != 1 {
 		msgs.Warning("Please provide a server name: ex: use localhost")
-		err := errors.New("Can not find server")
-		tr := terr.New("cmd.use", err)
+		tr := terr.New("Can not find server")
 		return cmd, tr
 	}
 	server := cmd.Args[0].(string)
 	msgs.Status("Connecting to server " + server + " ...")
 	tr := serverExists(server, state)
 	if tr != nil {
-		tr = terr.Pass("comd.state.Use", tr)
+		tr = tr.Pass()
 		return cmd, tr
 	}
 	state.WsServer = state.WsServers[server]
@@ -53,7 +52,7 @@ func runUse(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, *terr.Trace) {
 	// init cli and check server
 	if tr != nil {
 		err := errors.New("can not connect to websockets server: check your config")
-		tr := terr.Add("cmd.state.Use", err, tr)
+		tr := tr.Add(err)
 		events.Error("microb", "Can not connect to websockets server", tr)
 		return cmd, tr
 	} else {
@@ -70,7 +69,6 @@ func serverExists(server_name string, state *cliTypes.State) *terr.Trace {
 		}
 	}
 	msg := "Server " + server_name + " not found: please check your config file"
-	err := errors.New(msg)
-	tr := terr.New("ws.serverExists", err)
+	tr := terr.New(msg)
 	return tr
 }

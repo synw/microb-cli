@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/SKAhack/go-shortid"
 	//"github.com/davecgh/go-spew/spew"
 	"github.com/synw/microb-cli/libmicrob/msgs"
@@ -18,14 +17,12 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 	timeout := false
 	// check if server is set
 	if state.WsServer == nil {
-		err := errors.New("No server selected. Set it with: use server_name")
-		tr := terr.New("cmd.handler.SendCmd", err)
+		tr := terr.New("No server selected. Set it with: use server_name")
 		return cmd, timeout, tr
 	}
 	// check if cli is connected
 	if state.Cli.IsConnected == false {
-		err := errors.New("No connection to server: use server_name")
-		tr := terr.New("cmd.handler.SendCmd", err)
+		tr := terr.New("No connection to server: use server_name")
 		return cmd, timeout, tr
 	}
 	// get an id for the command
@@ -38,7 +35,7 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 	// send the cmds
 	tr := sendCommand(cmd, state)
 	if tr != nil {
-		tr := terr.Pass("cmd.handler.SendCmd", tr)
+		tr := tr.Pass()
 		return cmd, timeout, tr
 	}
 
@@ -56,7 +53,7 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 			return cmd, false, nil
 		}
 		if tr != nil {
-			tr = terr.Pass("cmds.handlers.handler.SendCmd", tr)
+			tr = tr.Pass()
 			return cmd, false, tr
 		}
 		// process the command
@@ -68,8 +65,7 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 			run := cmd.ExecAfter.(func(*types.Cmd) (*types.Cmd, *terr.Trace))
 			cmd, tr = run(cmd)
 			if tr != nil {
-				err := errors.New("Can not execute processing function")
-				tr := terr.Add("cmd.handler.SendCmd", err, tr)
+				tr := tr.Add("Can not execute processing function")
 				return cmd, false, tr
 			}
 			return cmd, false, nil
@@ -77,8 +73,7 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 			for i, val := range cmd.ReturnValues {
 				str, tr := dec.Decode(val.(string), "terminal")
 				if tr != nil {
-					err := errors.New("Can not decode message")
-					tr := terr.Add("cmd.handler.SendCmd", err, tr)
+					tr := tr.Add("Can not decode message")
 					return cmd, false, tr
 				}
 				if i == 0 {
@@ -126,13 +121,12 @@ func sendCommand(cmd *types.Cmd, state *cliTypes.State) *terr.Trace {
 	payload, err := json.Marshal(cmdp)
 	if err != nil {
 		msg := "Unable to marshall json: " + err.Error()
-		err := errors.New(msg)
-		tr := terr.New("cmd.handler.sendCommand", err)
+		tr := terr.New(msg)
 		return tr
 	}
 	_, err = state.Cli.Http.Publish(state.WsServer.CmdChanIn, payload)
 	if err != nil {
-		tr := terr.New("cmd.handler.sendCommand", err)
+		tr := terr.New(err)
 		return tr
 	}
 	return nil

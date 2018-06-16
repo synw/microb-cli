@@ -1,7 +1,6 @@
 package prompter
 
 import (
-	"errors"
 	"github.com/c-bata/go-prompt"
 	"github.com/synw/microb-cli/libmicrob/cmds"
 	"github.com/synw/microb-cli/libmicrob/cmds/handler"
@@ -86,9 +85,8 @@ func executor(in string) {
 			_, tr := run(cmd, state)
 			if tr != nil {
 				msg := "Can not execute local processing function for command " + in
-				err := errors.New(msg)
-				tr = terr.Add("executor", err, tr)
-				tr.Printc()
+				tr = tr.Add(msg)
+				tr.Print()
 				return
 			}
 			return
@@ -106,9 +104,8 @@ func executor(in string) {
 			_, tr = rescmd.ExecAfter.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))(rescmd, state)
 			if tr != nil {
 				msg := "Can not execute callback for command " + in
-				err := errors.New(msg)
-				tr := terr.Add("executor", err, tr)
-				msgs.Error(msg + "\n" + tr.Formatc())
+				tr := tr.Add(msg)
+				msgs.Error(msg + "\n" + tr.Msg())
 				return
 			}
 		}

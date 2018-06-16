@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"github.com/synw/microb-cli/libmicrob/cmds"
 	"github.com/synw/microb-cli/libmicrob/msgs"
@@ -19,9 +18,8 @@ func main() {
 	// read conf
 	state, tr := st.Init()
 	if tr != nil {
-		err := errors.New("Unable to init state")
-		tr := terr.Add("main", err, tr)
-		terr.Fatal("main", tr)
+		tr := tr.Pass()
+		tr.Fatal("Unable to init state")
 	}
 	msgs.Ok("State initialized")
 	srvs := "Available servers:"
@@ -36,7 +34,7 @@ func main() {
 		cmd.Args = args
 		_, tr := cmd.ExecCli.(func(*types.Cmd, *cliTypes.State) (*types.Cmd, *terr.Trace))(cmd, state)
 		if tr != nil {
-			tr.Formatc()
+			tr.Print()
 		}
 	}
 	msgs.Msg(srvs)

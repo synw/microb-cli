@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"errors"
 	"github.com/spf13/viper"
 	"github.com/synw/microb/libmicrob/types"
 	"github.com/synw/terr"
@@ -23,12 +22,11 @@ func Get() (map[string]*types.WsServer, []string, *terr.Trace) {
 	if err != nil {
 		switch err.(type) {
 		case viper.ConfigParseError:
-			trace := terr.New("getServers", err)
-			return servers, srvs, trace
+			tr := terr.New(err)
+			return servers, srvs, tr
 		default:
-			err := errors.New("Unable to locate config file")
-			trace := terr.New("getServers", err)
-			return servers, srvs, trace
+			tr := terr.New("Unable to locate config file")
+			return servers, srvs, tr
 		}
 	}
 	available_servers := viper.Get("servers").([]interface{})

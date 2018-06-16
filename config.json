@@ -6,7 +6,7 @@
 		"centrifugo_key":"secret_key"
 		},
 		{
-		"name": "picasso",
+		"name": "ramon",
 		"centrifugo_addr":"localhost:8001",
 		"centrifugo_key":"secret_key"
 		},
