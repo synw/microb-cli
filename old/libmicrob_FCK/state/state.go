@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/synw/centcom"
-	"github.com/synw/microb-cli/libmicrob/cmd"
-	"github.com/synw/microb-cli/libmicrob/conf"
-	"github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb-cli/cmd"
+	"github.com/synw/microb-cli/conf"
+	"github.com/synw/microb/cmd"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
-	"github.com/synw/microb-cli/libmicrob/cmd/info"
+	"github.com/synw/microb-cli/cmd/info"
 )
 
 var Servers map[string]*types.Server

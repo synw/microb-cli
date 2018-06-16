@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/synw/centcom"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

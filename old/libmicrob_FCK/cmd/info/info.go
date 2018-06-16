@@ -1,9 +1,9 @@
 package info
 
 import (
-	"github.com/synw/microb-cli/libmicrob/cmd/handler"
-	command "github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/libmicrob/types"	
+	"github.com/synw/microb-cli/cmd/handler"
+	command "github.com/synw/microb/cmd"
+	"github.com/synw/microb/types"	
 	"github.com/synw/terr"
 )
 

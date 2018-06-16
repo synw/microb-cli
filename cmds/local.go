@@ -2,10 +2,10 @@ package cmds
 
 import (
 	"errors"
-	cliTypes "github.com/synw/microb-cli/libmicrob/types"
-	"github.com/synw/microb/libmicrob/events"
-	"github.com/synw/microb/libmicrob/msgs"
-	"github.com/synw/microb/libmicrob/types"
+	cliTypes "github.com/synw/microb-cli/types"
+	"github.com/synw/microb/events"
+	"github.com/synw/microb/msgs"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

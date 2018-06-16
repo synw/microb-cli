@@ -3,7 +3,7 @@ package infos
 import (
 	"github.com/synw/microb-http/cmd"
 	"github.com/synw/microb-http/state"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

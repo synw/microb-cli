@@ -2,9 +2,9 @@ package services
 
 import (
 	color "github.com/acmacalister/skittles"
-	"github.com/synw/microb-cli/libmicrob/msgs"
-	cliTypes "github.com/synw/microb-cli/libmicrob/types"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb-cli/msgs"
+	cliTypes "github.com/synw/microb-cli/types"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

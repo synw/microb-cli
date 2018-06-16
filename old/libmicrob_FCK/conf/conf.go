@@ -3,8 +3,8 @@ package conf
 import (
 	"errors"
 	"github.com/spf13/viper"
-	globalConf "github.com/synw/microb/libmicrob/conf"
-	"github.com/synw/microb/libmicrob/types"
+	globalConf "github.com/synw/microb/conf"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

@@ -3,9 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"github.com/synw/microb-cli/libmicrob/state"
-	"github.com/synw/microb/libmicrob/cmd"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb-cli/state"
+	"github.com/synw/microb/cmd"
+	"github.com/synw/microb/types"
 	"github.com/synw/microb/services"
 	"github.com/synw/terr"
 	"time"

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/abiosoft/ishell"
 	"github.com/acmacalister/skittles"
-	"github.com/synw/microb-cli/libmicrob/state"
+	"github.com/synw/microb-cli/state"
 	"github.com/synw/terr"
 )
 

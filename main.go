@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/synw/microb-cli/libmicrob/cmds"
-	"github.com/synw/microb-cli/libmicrob/msgs"
-	"github.com/synw/microb-cli/libmicrob/prompter"
-	st "github.com/synw/microb-cli/libmicrob/state"
-	cliTypes "github.com/synw/microb-cli/libmicrob/types"
-	"github.com/synw/microb/libmicrob/types"
+	"github.com/synw/microb-cli/cmds"
+	"github.com/synw/microb-cli/msgs"
+	"github.com/synw/microb-cli/prompter"
+	st "github.com/synw/microb-cli/state"
+	cliTypes "github.com/synw/microb-cli/types"
+	"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 

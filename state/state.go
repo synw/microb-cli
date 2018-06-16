@@ -2,12 +2,12 @@ package state
 
 import (
 	"github.com/synw/centcom"
-	"github.com/synw/microb-cli/libmicrob/cmds"
-	"github.com/synw/microb-cli/libmicrob/conf"
-	"github.com/synw/microb-cli/libmicrob/msgs"
-	cliTypes "github.com/synw/microb-cli/libmicrob/types"
+	"github.com/synw/microb-cli/cmds"
+	"github.com/synw/microb-cli/conf"
+	"github.com/synw/microb-cli/msgs"
+	cliTypes "github.com/synw/microb-cli/types"
 	"github.com/synw/microb-cli/services"
-	//"github.com/synw/microb/libmicrob/types"
+	//"github.com/synw/microb/types"
 	"github.com/synw/terr"
 )
 
