@@ -58,7 +58,11 @@ func SendCmd(cmd *types.Cmd, state *cliTypes.State) (*types.Cmd, bool, *terr.Tra
 		}
 		// process the command
 		if cmd.Status != "success" {
-			msgs.Error(cmd.ErrMsg)
+			var msg string
+			for _, rv := range cmd.ReturnValues {
+				msg = msg + rv.(string)
+			}
+			msgs.Error(msg)
 			return cmd, false, cmd.Trace
 		}
 		if cmd.ExecAfter != nil {
@@ -113,7 +117,6 @@ func sendCommand(cmd *types.Cmd, state *cliTypes.State) *terr.Trace {
 	cmdp.Args = cmd.Args
 	cmdp.From = cmd.From
 	cmdp.Status = cmd.Status
-	cmdp.ErrMsg = cmd.ErrMsg
 	cmdp.NoLog = cmd.NoLog
 	cmdp.Service = cmd.Service
 	cmdp.ReturnValues = cmd.ReturnValues
